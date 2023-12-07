@@ -10,3 +10,28 @@ class Todo(models.Model):
 
     def __str__(self):
         return self.task
+
+class Person(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    dob = models.DateField()
+    address = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class PartTimer(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    dob = models.DateField()
+    address = models.CharField(max_length=255)
+    referred_by = models.CharField(max_length=255, blank=True, null=True) 
+    current_occupation = models.CharField(max_length=255)
+    is_student = models.BooleanField(default=False)  
+    course_of_study = models.CharField(max_length=255, blank=True, null=True)  
+    current_pursuing_year = models.IntegerField(blank=True, null=True)  
+
+    def __str__(self):
+        return self.name
