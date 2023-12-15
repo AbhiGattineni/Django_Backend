@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-4@egdx7%f3o=ovo)ke&7dhr9qjhep9x*9nv08n&y=%v6!8qzk7
 DEBUG = True
 
 ALLOWED_HOSTS = ['35.172.219.206', '127.0.0.1',"http://localhost:3000",
-    "https://anddhengroup.com"]
+    "https://www.anddhengroup.com"]
 
 
 # Application definition
@@ -60,7 +60,21 @@ CORS_EXPOSE_HEADERS = [
     'Access-Control-Allow-Origin',
     'Access-Control-Allow-Headers',
     'Access-Control-Allow-Methods',
+    "Content-Type",
+    "Authorization",
 ]
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+]
+
+CORS_ORIGIN_WHITELIST = (
+    "http://localhost:8000",
+    "http://localhost:3000",
+    "https://www.anddhengroup.com",
+)
 
 ROOT_URLCONF = 'Django_Backend.urls'
 
