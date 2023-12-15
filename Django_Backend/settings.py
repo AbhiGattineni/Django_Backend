@@ -26,9 +26,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-4@egdx7%f3o=ovo)ke&7dhr9qjhep9x*9nv08n&y=%v6!8qzk7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['35.172.219.206', 'localhost', '127.0.0.1', 'anddhengroup.com']
+ALLOWED_HOSTS = ['35.172.219.206', '127.0.0.1',"http://localhost:3000",
+    "https://anddhengroup.com"]
 
 
 # Application definition
@@ -41,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'backend_api'
+    'backend_api',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +54,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+CORS_EXPOSE_HEADERS = [
+    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Headers',
+    'Access-Control-Allow-Methods',
 ]
 
 ROOT_URLCONF = 'Django_Backend.urls'
