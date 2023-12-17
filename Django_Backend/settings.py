@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-4@egdx7%f3o=ovo)ke&7dhr9qjhep9x*9nv08n&y=%v6!8qzk7
 DEBUG = True
 
 ALLOWED_HOSTS = ['35.172.219.206', '127.0.0.1',"http://localhost:3000",
-    "https://www.anddhengroup.com"]
+    "https://www.anddhengroup.com","anddhenloadbalancer-622926709.us-east-1.elb.amazonaws.com","ec2-35-172-219-206.compute-1.amazonaws.com"]
 
 
 # Application definition
