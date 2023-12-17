@@ -1,0 +1,18 @@
+version: "3.4"
+services:
+  web:
+    build: .
+    command: bash -c "python manage.py migrate && python manage.py runserver  0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_DB=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${AWS_PASSWORD}
