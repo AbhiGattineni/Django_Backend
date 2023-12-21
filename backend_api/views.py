@@ -7,6 +7,12 @@ from .serializers import TodoSerializer
 from .models import Person
 from .serializers import PersonSerializer
 from rest_framework.decorators import api_view
+from django.http import HttpResponseForbidden
+from .models import Consultant
+from .serializers import ConsultantSerializer
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
 
 @api_view(['POST'])
 def create_person(request):
@@ -19,6 +25,8 @@ def create_person(request):
 
 @api_view(['GET'])
 def get_person(request, pk):
+    query_params = request.query_params
+    print('Query Parameters:', query_params)
     try:
         person = Person.objects.get(pk=pk)
     except Person.DoesNotExist:
@@ -120,3 +128,28 @@ def get_object(self, todo_id, user_id):
             {"res": "Object deleted!"},
             status=status.HTTP_200_OK
         )
+
+class ConsultantList(APIView):
+    def get(self, request, format=None):
+        consultants = Consultant.objects.all()
+        serializer = ConsultantSerializer(consultants, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = ConsultantSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+        # Handling errors
+        errors = serializer.errors
+        detailed_errors = {}
+
+        for field, messages in errors.items():
+            detailed_message = []
+            for message in messages:
+                # Here you can customize the message or simply append it
+                detailed_message.append(str(message))
+            detailed_errors[field] = detailed_message
+
+        return Response({"errors": detailed_errors}, status=status.HTTP_400_BAD_REQUEST)

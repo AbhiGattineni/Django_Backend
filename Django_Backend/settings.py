@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-4@egdx7%f3o=ovo)ke&7dhr9qjhep9x*9nv08n&y=%v6!8qzk7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['35.172.219.206', '127.0.0.1',"172.31.23.218","http://localhost:3000",
+ALLOWED_HOSTS = ['35.172.219.206', '127.0.0.1',"172.31.23.218","http://localhost:3000",'localhost',
     "https://www.anddhengroup.com","anddhenloadbalancer-622926709.us-east-1.elb.amazonaws.com","ec2-35-172-219-206.compute-1.amazonaws.com","server.anddhengroup.com"]
 
 
@@ -159,3 +159,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
