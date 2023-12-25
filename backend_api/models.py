@@ -76,3 +76,13 @@ class CollegesList(models.Model):
         db_table = 'collegelist'
     def _str_(self):
         return self.college_name
+
+class AccessRoles(models.Model):
+    admin_access_role = models.CharField(max_length=255)
+    name_of_role = models.CharField(max_length=255,default='role_name')
+
+    def __str__(self):
+        return self.admin_access_role
+
+    class Meta:
+        db_table = 'access_roles'

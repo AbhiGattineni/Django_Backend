@@ -10,6 +10,12 @@ from rest_framework.decorators import api_view
 from django.http import HttpResponseForbidden
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from .models import AccessRoles
+from django.views.decorators.http import require_http_methods
+from django.core.exceptions import ObjectDoesNotExist
+import json
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 
 @api_view(['POST'])
@@ -126,3 +132,46 @@ def get_object(self, todo_id, user_id):
             {"res": "Object deleted!"},
             status=status.HTTP_200_OK
         )
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def add_role(request):
+    data = json.loads(request.body)
+    role = AccessRoles.objects.create(admin_access_role=data['admin_access_role'], name_of_role=data['name_of_role'])
+    return JsonResponse({'id': role.id})
+
+@require_http_methods(["GET"])
+def get_role(request, role_id):
+    try:
+        role = AccessRoles.objects.get(id=role_id)
+        return JsonResponse({'admin_access_role': role.admin_access_role, 'name_of_role': role.name_of_role})
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': 'Role not found'}, status=404)
+def get_all_roles(request):
+    roles = AccessRoles.objects.all()
+    roles_data = [{'id': role.id, 'admin_access_role': role.admin_access_role, 'name_of_role': role.name_of_role} for role in roles]
+    return JsonResponse(roles_data, safe=False)
+
+@csrf_exempt
+@require_http_methods(["PUT"])
+def update_role(request, role_id):
+    print(request.body)
+    data = json.loads(request.body)
+    try:
+        role = AccessRoles.objects.get(id=role_id)
+        role.admin_access_role = data.get('admin_access_role', role.admin_access_role)
+        role.name_of_role = data.get('name_of_role', role.name_of_role)
+        role.save()
+        return JsonResponse({'message': 'Role updated successfully'})
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': 'Role not found'}, status=404)
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def delete_role(request, role_id):
+    try:
+        role = AccessRoles.objects.get(id=role_id)
+        role.delete()
+        return JsonResponse({'message': 'Role deleted successfully'})
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': 'Role not found'}, status=404)
