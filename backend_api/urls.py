@@ -4,6 +4,8 @@ from .views import (
     TodoDetailApiView,
 )
 from . import views
+from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView
+
 
 urlpatterns = [
     path('api', TodoListApiView.as_view()),
@@ -15,4 +17,8 @@ urlpatterns = [
     path('roles/update/<int:role_id>/', views.update_role, name='update_role'),
     path('roles/delete/<int:role_id>/', views.delete_role, name='delete_role'),
     path('roles/all/', views.get_all_roles, name='get_all_roles'),
+    path('api/consultant/', ConsultantCreateAPIView.as_view(), name='create-consultant'),
+    path('api/consultants/', ConsultantListAPIView.as_view(), name='consultant-list'),
+    path('consultants/delete/<int:pk>/', ConsultantDeleteAPIView.as_view(), name='consultant-delete'),
+    path('api/consultants/<int:pk>/', ConsultantUpdateAPIView.as_view(), name='consultant-update'),
 ]

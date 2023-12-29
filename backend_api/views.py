@@ -16,6 +16,12 @@ from django.core.exceptions import ObjectDoesNotExist
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from .models import Consultant
+from .serializers import ConsultantSerializer
+import logging
+from django.shortcuts import get_object_or_404
+logger = logging.getLogger(__name__)
+
 
 
 @api_view(['POST'])
@@ -175,3 +181,49 @@ def delete_role(request, role_id):
         return JsonResponse({'message': 'Role deleted successfully'})
     except ObjectDoesNotExist:
         return JsonResponse({'error': 'Role not found'}, status=404)
+
+
+class ConsultantCreateAPIView(APIView):
+    def post(self, request, format=None):
+        serializer = ConsultantSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ConsultantListAPIView(APIView):
+    def get(self, request, format=None):
+        consultants = Consultant.objects.all()
+        serializer = ConsultantSerializer(consultants, many=True)
+        return Response(serializer.data)
+
+class ConsultantDeleteAPIView(APIView):
+    def delete(self, request, pk, format=None):
+        # Use get_object_or_404 to simplify the code
+        consultant = get_object_or_404(Consultant, pk=pk)
+
+        try:
+            consultant.delete()
+            return Response({'message': 'Consultant deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            # Log the exception for debugging
+            logger.error(f'Error deleting consultant with id {pk}: {e}')
+            return Response({'error': 'Error occurred during deletion'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ConsultantUpdateAPIView(APIView):
+    def put(self, request, pk, format=None):
+        # Handling the case where the consultant does not exist
+        consultant = get_object_or_404(Consultant, pk=pk)
+
+        serializer = ConsultantSerializer(consultant, data=request.data, partial=True)
+        try:
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                # Handling invalid data
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Logging unexpected exceptions
+            logger.error(f'Unexpected error occurred while updating consultant with id {pk}: {e}')
+            return Response({'error': 'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

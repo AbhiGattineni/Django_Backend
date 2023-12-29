@@ -86,3 +86,58 @@ class AccessRoles(models.Model):
 
     class Meta:
         db_table = 'access_roles'
+
+
+class Consultant(models.Model):
+    # Basic Information
+    full_name = models.CharField(max_length=100)
+    full_name_verified = models.BooleanField(default=False)
+    phone_number = models.CharField(max_length=10)  # Assuming only digits, no formatting
+    email_id = models.EmailField()
+    dob = models.DateField()  # Date of Birth
+    visa_status = models.CharField(max_length=20, choices=[
+        ('OPT', 'OPT'), 
+        ('CPT', 'CPT'), 
+        ('H1B', 'H1B'), 
+        ('H4 EAD', 'H4 EAD')
+    ])
+    visa_status_verified = models.BooleanField(default=False)
+    visa_validity = models.DateField()
+    visa_validity_verified = models.BooleanField(default=False)
+
+    # Education Details
+    btech_college = models.CharField(max_length=100)
+    btech_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    btech_graduation_date = models.DateField()
+    masters_college = models.CharField(max_length=100)
+    masters_cgpa = models.DecimalField(max_digits=4, decimal_places=2)
+    masters_graduation_date = models.DateField()
+
+    # Professional Details
+    technologies = models.JSONField()  # Storing an array of strings
+    current_location = models.CharField(max_length=100)
+    relocation = models.BooleanField()
+    experience_in_us = models.TextField()  # To store detailed text
+    experience_in_us_verified = models.BooleanField(default=False)
+    experience_in_india = models.TextField()  # To store detailed text
+    experience_in_india_verified = models.BooleanField(default=False)
+    relocation_preference = models.TextField()  # Cities and states
+
+    # Personal Details
+    passport_number = models.CharField(max_length=50, blank=True)
+    passport_number_verified = models.BooleanField(default=False)
+    driving_licence = models.CharField(max_length=50, blank=True)
+    rate_expectations = models.CharField(max_length=100)
+    last_4_ssn = models.CharField(max_length=4)
+    linkedin_url = models.URLField(max_length=200, blank=True)
+
+    # Resume Fields
+    original_resume = models.FileField(upload_to='resumes/', blank=True, null=True)
+    consulting_resume = models.FileField(upload_to='resumes/', blank=True, null=True)
+
+    def __str__(self):
+        return self.full_name
+
+    class Meta:
+        db_table = 'consultant_details'
+
