@@ -55,27 +55,46 @@ class CollegesList(models.Model):
     application_UG_link = models.URLField(blank=True, null=True)
     application_graduation_link = models.URLField(blank=True, null=True)
     application_UG_fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    application_UG_fee_link = models.URLField(blank=True, null=True)
     application_graduation_fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    gre_score = models.PositiveIntegerField(blank=True, null=True)
-    toefl_UG_score = models.PositiveIntegerField(blank=True, null=True)
-    toefl_graduation_score = models.PositiveIntegerField(blank=True, null=True)
+    application_graduation_fee_link = models.URLField(blank=True, null=True)
+    gre_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    gre_score_link = models.URLField(blank=True, null=True)
+    toefl_UG_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    toefl_UG_score_link = models.URLField(blank=True, null=True)
+    toefl_graduation_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    toefl_graduation_score_link = models.URLField(blank=True, null=True)
+    ielts_ug_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    ielts_ug_score_link = models.URLField(blank=True, null=True)
+    ielts_graduation_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    ielts_graduation_score_link = models.URLField(blank=True, null=True)
     fall_deadline_UG = models.DateField(blank=True, null=True)
+    fall_deadline_UG_link = models.URLField(blank=True, null=True)
     fall_deadline_graduation = models.DateField(blank=True, null=True)
+    fall_deadline_graduation_link = models.URLField(blank=True, null=True)
     spring_deadline_UG = models.DateField(blank=True, null=True)
+    spring_deadline_UG_link = models.URLField(blank=True, null=True)
     spring_deadline_graduation = models.DateField(blank=True, null=True)
-    ielts_ug_score = models.PositiveIntegerField(blank=True, null=True)
-    ielts_graduation_score = models.PositiveIntegerField(blank=True, null=True)
+    spring_deadline_graduation_link = models.URLField(blank=True, null=True)
     college_email = models.EmailField(blank=True, null=True)
+    college_email_link = models.URLField(blank=True, null=True)
     college_phone = models.CharField(max_length=15, blank=True, null=True)
+    college_phone_link = models.URLField(blank=True, null=True)
     international_person_email = models.EmailField(blank=True, null=True)
+    international_person_email_link = models.URLField(blank=True, null=True)
     public_private = models.CharField(max_length=10, choices=[('public', 'Public'), ('private', 'Private')], blank=True, null=True)
     UG_courses = models.TextField(blank=True, null=True)
+    UG_courses_link = models.URLField(blank=True, null=True)
     graduation_courses = models.TextField(blank=True, null=True)
+    graduation_courses_link = models.URLField(blank=True, null=True)
 
     class Meta:
         db_table = 'collegelist'
-    def _str_(self):
+
+    def __str__(self):
         return self.college_name
+
+
 
 class AccessRoles(models.Model):
     admin_access_role = models.CharField(max_length=255)

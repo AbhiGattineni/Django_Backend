@@ -4,6 +4,7 @@ from .views import (
     TodoDetailApiView,
 )
 from . import views
+from .views import create_college, get_college, update_college, delete_college
 
 urlpatterns = [
     path('api', TodoListApiView.as_view()),
@@ -15,4 +16,8 @@ urlpatterns = [
     path('roles/update/<int:role_id>/', views.update_role, name='update_role'),
     path('roles/delete/<int:role_id>/', views.delete_role, name='delete_role'),
     path('roles/all/', views.get_all_roles, name='get_all_roles'),
+    path('colleges/', create_college, name='create_college'),
+    path('colleges/<int:pk>/', get_college, name='get_college'),
+    path('colleges/<int:pk>/update/', update_college, name='update_college'),
+    path('colleges/<int:pk>/delete/', delete_college, name='delete_college'),
 ]

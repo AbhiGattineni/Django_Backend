@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
+from rest_framework.decorators import api_view, permission_classes
 from .models import Todo
 from .serializers import TodoSerializer
 from .models import Person
@@ -16,7 +17,8 @@ from django.core.exceptions import ObjectDoesNotExist
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-
+from .models import CollegesList
+from .serializers import CollegesListSerializer
 
 @api_view(['POST'])
 def create_person(request):
@@ -175,3 +177,48 @@ def delete_role(request, role_id):
         return JsonResponse({'message': 'Role deleted successfully'})
     except ObjectDoesNotExist:
         return JsonResponse({'error': 'Role not found'}, status=404)
+
+@api_view(['POST'])
+def create_college(request):
+    if request.method == 'POST':
+        serializer = CollegesListSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_college(request, pk):
+    try:
+        college = CollegesList.objects.get(pk=pk)
+    except CollegesList.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = CollegesListSerializer(college)
+        return Response(serializer.data)
+
+@api_view(['PUT'])
+def update_college(request, pk):
+    try:
+        college = CollegesList.objects.get(pk=pk)
+    except CollegesList.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PUT':
+        serializer = CollegesListSerializer(college, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def delete_college(request, pk):
+    try:
+        college = CollegesList.objects.get(pk=pk)
+    except CollegesList.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'DELETE':
+        college.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
