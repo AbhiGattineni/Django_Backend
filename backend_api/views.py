@@ -182,13 +182,25 @@ class DeleteRoleView(APIView):
         except ObjectDoesNotExist:
             return JsonResponse({'error': 'Role not found'}, status=404)
 
+class ConsultantCreateAPIView(APIView):
+    def post(self, request, format=None):
+        serializer = ConsultantSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET'])
+def get_all_colleges(request):
+    if request.method == 'GET':
+        colleges = CollegesList.objects.all()
+        serializer = CollegesListSerializer(colleges, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 @api_view(['POST'])
 def create_college(request):
     if request.method == 'POST':
         serializer = CollegesListSerializer(data=request.data)
-class ConsultantCreateAPIView(APIView):
-    def post(self, request, format=None):
-        serializer = ConsultantSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -229,6 +241,7 @@ def delete_college(request, pk):
     if request.method == 'DELETE':
         college.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 class ConsultantListAPIView(APIView):
     def get(self, request, format=None):
         consultants = Consultant.objects.all()
