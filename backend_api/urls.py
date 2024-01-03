@@ -1,7 +1,12 @@
-from django.urls import path, include
+from django.urls import path
+from . import views
 from .views import (
     TodoListApiView,
     TodoDetailApiView,
+    ConsultantCreateAPIView,
+    ConsultantListAPIView,
+    ConsultantDeleteAPIView,
+    ConsultantUpdateAPIView,
 )
 from . import views
 from .views import create_college, get_college, update_college, delete_college

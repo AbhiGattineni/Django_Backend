@@ -141,55 +141,51 @@ def get_object(self, todo_id, user_id):
             {"res": "Object deleted!"},
             status=status.HTTP_200_OK
         )
+class AddRoleView(APIView):
+    def post(self, request):
+        data = json.loads(request.body)
+        role = AccessRoles.objects.create(admin_access_role=data['admin_access_role'], name_of_role=data['name_of_role'])
+        return JsonResponse({'id': role.id})
 
-@csrf_exempt
-@require_http_methods(["POST"])
-def add_role(request):
-    data = json.loads(request.body)
-    role = AccessRoles.objects.create(admin_access_role=data['admin_access_role'], name_of_role=data['name_of_role'])
-    return JsonResponse({'id': role.id})
+class GetRoleView(APIView):
+    def get(self, request, role_id):
+        try:
+            role = AccessRoles.objects.get(id=role_id)
+            return JsonResponse({'admin_access_role': role.admin_access_role, 'name_of_role': role.name_of_role})
+        except ObjectDoesNotExist:
+            return JsonResponse({'error': 'Role not found'}, status=404)
 
-@require_http_methods(["GET"])
-def get_role(request, role_id):
-    try:
-        role = AccessRoles.objects.get(id=role_id)
-        return JsonResponse({'admin_access_role': role.admin_access_role, 'name_of_role': role.name_of_role})
-    except ObjectDoesNotExist:
-        return JsonResponse({'error': 'Role not found'}, status=404)
-def get_all_roles(request):
-    roles = AccessRoles.objects.all()
-    roles_data = [{'id': role.id, 'admin_access_role': role.admin_access_role, 'name_of_role': role.name_of_role} for role in roles]
-    return JsonResponse(roles_data, safe=False)
+class GetAllRolesView(APIView):
+    def get(self, request):
+        roles = AccessRoles.objects.all()
+        roles_data = [{'id': role.id, 'admin_access_role': role.admin_access_role, 'name_of_role': role.name_of_role} for role in roles]
+        return JsonResponse(roles_data, safe=False)
 
-@csrf_exempt
-@require_http_methods(["PUT"])
-def update_role(request, role_id):
-    print(request.body)
-    data = json.loads(request.body)
-    try:
-        role = AccessRoles.objects.get(id=role_id)
-        role.admin_access_role = data.get('admin_access_role', role.admin_access_role)
-        role.name_of_role = data.get('name_of_role', role.name_of_role)
-        role.save()
-        return JsonResponse({'message': 'Role updated successfully'})
-    except ObjectDoesNotExist:
-        return JsonResponse({'error': 'Role not found'}, status=404)
+class UpdateRoleView(APIView):
+    def put(self, request, role_id):
+        data = json.loads(request.body)
+        try:
+            role = AccessRoles.objects.get(id=role_id)
+            role.admin_access_role = data.get('admin_access_role', role.admin_access_role)
+            role.name_of_role = data.get('name_of_role', role.name_of_role)
+            role.save()
+            return JsonResponse({'message': 'Role updated successfully'})
+        except ObjectDoesNotExist:
+            return JsonResponse({'error': 'Role not found'}, status=404)
 
-@csrf_exempt
-@require_http_methods(["DELETE"])
-def delete_role(request, role_id):
-    try:
-        role = AccessRoles.objects.get(id=role_id)
-        role.delete()
-        return JsonResponse({'message': 'Role deleted successfully'})
-    except ObjectDoesNotExist:
-        return JsonResponse({'error': 'Role not found'}, status=404)
+class DeleteRoleView(APIView):
+    def delete(self, request, role_id):
+        try:
+            role = AccessRoles.objects.get(id=role_id)
+            role.delete()
+            return JsonResponse({'message': 'Role deleted successfully'})
+        except ObjectDoesNotExist:
+            return JsonResponse({'error': 'Role not found'}, status=404)
 
 @api_view(['POST'])
 def create_college(request):
     if request.method == 'POST':
         serializer = CollegesListSerializer(data=request.data)
-
 class ConsultantCreateAPIView(APIView):
     def post(self, request, format=None):
         serializer = ConsultantSerializer(data=request.data)
