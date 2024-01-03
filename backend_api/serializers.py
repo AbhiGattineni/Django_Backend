@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Todo
 from .models import Person
 from .models import CollegesList
+from .models import Consultant
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,4 +17,8 @@ class PersonSerializer(serializers.ModelSerializer):
 class CollegesListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollegesList
+        fields = '__all__'
+class ConsultantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Consultant
         fields = '__all__'

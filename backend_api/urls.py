@@ -5,6 +5,8 @@ from .views import (
 )
 from . import views
 from .views import create_college, get_college, update_college, delete_college
+from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView
+
 
 urlpatterns = [
     path('api', TodoListApiView.as_view()),
@@ -20,4 +22,8 @@ urlpatterns = [
     path('colleges/<int:pk>/', get_college, name='get_college'),
     path('colleges/<int:pk>/update/', update_college, name='update_college'),
     path('colleges/<int:pk>/delete/', delete_college, name='delete_college'),
+    path('api/consultant/', ConsultantCreateAPIView.as_view(), name='create-consultant'),
+    path('api/consultants/', ConsultantListAPIView.as_view(), name='consultant-list'),
+    path('consultants/delete/<int:pk>/', ConsultantDeleteAPIView.as_view(), name='consultant-delete'),
+    path('api/consultants/<int:pk>/', ConsultantUpdateAPIView.as_view(), name='consultant-update'),
 ]
