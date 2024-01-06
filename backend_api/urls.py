@@ -10,7 +10,7 @@ from .views import (
 from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, DeleteRoleView
 
 
-from .views import create_college, get_college, update_college, delete_college
+from .views import create_college, get_college, update_college, delete_college, get_all_colleges
 from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView
 
 
@@ -28,7 +28,8 @@ urlpatterns = [
     path('api/consultants/', ConsultantListAPIView.as_view(), name='consultant-list'),
     path('consultants/delete/<int:pk>/', ConsultantDeleteAPIView.as_view(), name='consultant-delete'),
     path('api/consultants/<int:pk>/', ConsultantUpdateAPIView.as_view(), name='consultant-update'),
-    path('colleges/', create_college, name='create_college'),
+    path('colleges/create/', create_college, name='create_college'),
+    path('colleges/all/', get_all_colleges, name='get_all_colleges'),
     path('colleges/<int:pk>/', get_college, name='get_college'),
     path('colleges/<int:pk>/update/', update_college, name='update_college'),
     path('colleges/<int:pk>/delete/', delete_college, name='delete_college'),
