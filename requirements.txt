@@ -4,7 +4,7 @@ certifi==2022.5.18.1
 charset-normalizer==2.0.12
 distlib==0.3.6
 Django==3.2.9
-django-cors-headers==4.3.1
+django-cors-headers==4.1.0
 django-extensions==3.1.5
 django-rest-framework==0.1.0
 django-seed==0.3.1
