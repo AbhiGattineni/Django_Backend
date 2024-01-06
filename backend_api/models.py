@@ -150,7 +150,7 @@ class Consultant(models.Model):
     last_4_ssn = models.CharField(max_length=4)
     linkedin_url = models.URLField(max_length=200, blank=True)
 
-    # Resume Fields
+    # Resume Fields add
     original_resume = models.FileField(upload_to='resumes/', blank=True, null=True)
     consulting_resume = models.FileField(upload_to='resumes/', blank=True, null=True)
 
