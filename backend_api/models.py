@@ -160,3 +160,12 @@ class Consultant(models.Model):
     class Meta:
         db_table = 'consultant_details'
 
+class User(models.Model):
+    user_id = models.CharField(max_length=100)
+    full_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    phone_country_code = models.CharField(max_length=4)
+    phone_number = models.CharField(max_length=10)
+    email_id = models.EmailField()
+    enrolled_services = models.JSONField()
