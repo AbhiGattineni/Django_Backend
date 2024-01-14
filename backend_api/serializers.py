@@ -4,6 +4,7 @@ from .models import Person
 from .models import Consultant
 from .models import CollegesList
 from .models import Consultant
+from .models import User
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,3 +29,7 @@ class ConsultantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consultant
         fields = '__all__'
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['user_id', 'full_name', 'first_name', 'last_name', 'phone_country_code', 'phone_number', 'email_id', 'enrolled_services']

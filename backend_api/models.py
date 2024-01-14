@@ -44,7 +44,7 @@ class Role(models.Model):
 
     class Meta:
         db_table = 'role'
-    def _str_(self):
+    def __str__(self):
         return self.user_id
 
 class CollegesList(models.Model):
@@ -169,3 +169,8 @@ class User(models.Model):
     phone_number = models.CharField(max_length=10)
     email_id = models.EmailField()
     enrolled_services = models.JSONField()
+
+    class Meta:
+        db_table = 'User'
+    def _str_(self):
+        return self.user_id

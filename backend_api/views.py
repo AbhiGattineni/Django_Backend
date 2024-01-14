@@ -1,29 +1,23 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import permissions
-from rest_framework.decorators import api_view, permission_classes
-from .models import Todo
-from .serializers import TodoSerializer
-from .models import Person
-from .serializers import PersonSerializer
-from rest_framework.decorators import api_view
-from django.http import HttpResponseForbidden
+import json
+import logging
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse, HttpResponseForbidden
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from .models import AccessRoles
 from django.views.decorators.http import require_http_methods
-from django.core.exceptions import ObjectDoesNotExist
-import json
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from .models import CollegesList
-from .serializers import CollegesListSerializer
-from .models import Consultant
-from .serializers import ConsultantSerializer
-import logging
-from django.shortcuts import get_object_or_404
+
+from rest_framework import permissions, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User
+from .serializers import TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer
+
 logger = logging.getLogger(__name__)
+
 
 
 
@@ -278,3 +272,17 @@ class ConsultantUpdateAPIView(APIView):
             # Logging unexpected exceptions
             logger.error(f'Unexpected error occurred while updating consultant with id {pk}: {e}')
             return Response({'error': 'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def log_first_time_user(request):
+    # Check if user already exists
+    user_id = request.data.get('user_id')
+    if user_id and User.objects.filter(user_id=user_id).exists():
+        return Response({'message': 'User already exists'}, status=status.HTTP_200_OK)
+
+    # If user does not exist, create a new user
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

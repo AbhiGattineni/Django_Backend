@@ -5,6 +5,7 @@ from . import views
 from .views import (
     TodoListApiView,
     TodoDetailApiView,
+    log_first_time_user
 )
 
 from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, DeleteRoleView
@@ -33,4 +34,5 @@ urlpatterns = [
     path('colleges/<int:pk>/', get_college, name='get_college'),
     path('colleges/<int:pk>/update/', update_college, name='update_college'),
     path('colleges/<int:pk>/delete/', delete_college, name='delete_college'),
+    path('user/log-first-time/', log_first_time_user, name='log_first_time_user'),
 ]
