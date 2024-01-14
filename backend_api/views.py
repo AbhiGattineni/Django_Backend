@@ -275,7 +275,7 @@ class ConsultantUpdateAPIView(APIView):
 
 @api_view(['POST'])
 def log_first_time_user(request):
-    # Check if user already exists
+    # Check if user already exist
     user_id = request.data.get('user_id')
     if user_id and User.objects.filter(user_id=user_id).exists():
         return Response({'message': 'User already exists'}, status=status.HTTP_200_OK)
