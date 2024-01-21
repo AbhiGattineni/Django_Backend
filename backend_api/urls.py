@@ -2,10 +2,6 @@ from django.urls import path
 from . import views
 from django.urls import path
 from . import views
-from .views import (
-    TodoListApiView,
-    TodoDetailApiView,
-)
 
 from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, DeleteRoleView
 
@@ -15,8 +11,6 @@ from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDel
 
 
 urlpatterns = [
-    path('api', TodoListApiView.as_view()),
-    path('api/<int:todo_id>/', TodoDetailApiView.as_view()),
     path('person/create/', views.create_person, name='create_person'),
     path('person/<int:pk>/', views.get_person, name='get_person'),
     path('roles/add/', AddRoleView.as_view(), name='add_role'),

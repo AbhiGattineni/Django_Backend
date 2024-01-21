@@ -1,14 +1,8 @@
 from rest_framework import serializers
-from .models import Todo
 from .models import Person
 from .models import Consultant
 from .models import CollegesList
 from .models import Consultant
-
-class TodoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Todo
-        fields = ["task", "completed", "timestamp", "updated", "user"]
 
 class PersonSerializer(serializers.ModelSerializer):
     class Meta:

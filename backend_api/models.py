@@ -1,17 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
-from datetime import date
 
-
-class Todo(models.Model):
-    task = models.CharField(max_length = 180)
-    timestamp = models.DateTimeField(auto_now_add = True, auto_now = False, blank = True)
-    completed = models.BooleanField(default = False, blank = True)
-    updated = models.DateTimeField(auto_now = True, blank = True)
-    user = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True)
-
-    def __str__(self):
-        return self.task
 
 class Person(models.Model):
     name = models.CharField(max_length=255)
@@ -48,37 +36,37 @@ class Role(models.Model):
         return self.user_id
 
 class CollegesList(models.Model):
-    college_name = models.CharField(max_length=255)
+    college_name = models.CharField(max_length=255, unique=True)
     website_link = models.URLField(blank=True, null=True)
     international_UG_link = models.URLField(blank=True, null=True)
     international_graduation_link = models.URLField(blank=True, null=True)
     application_UG_link = models.URLField(blank=True, null=True)
     application_graduation_link = models.URLField(blank=True, null=True)
-    application_UG_fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    application_UG_fee = models.TextField(blank=True, null=True)
     application_UG_fee_link = models.URLField(blank=True, null=True)
-    application_graduation_fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    application_graduation_fee = models.TextField(blank=True, null=True)
     application_graduation_fee_link = models.URLField(blank=True, null=True)
-    gre_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    gre_score = models.TextField(blank=True, null=True)
     gre_score_link = models.URLField(blank=True, null=True)
-    toefl_UG_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    toefl_UG_score = models.TextField(blank=True, null=True)
     toefl_UG_score_link = models.URLField(blank=True, null=True)
-    toefl_graduation_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    toefl_graduation_score =models.TextField(blank=True, null=True)
     toefl_graduation_score_link = models.URLField(blank=True, null=True)
-    ielts_ug_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    ielts_ug_score = models.TextField(blank=True, null=True)
     ielts_ug_score_link = models.URLField(blank=True, null=True)
-    ielts_graduation_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    ielts_graduation_score = models.TextField(blank=True, null=True)
     ielts_graduation_score_link = models.URLField(blank=True, null=True)
-    fall_deadline_UG = models.DateField(blank=True, null=True)
+    fall_deadline_UG = models.TextField(blank=True, null=True)
     fall_deadline_UG_link = models.URLField(blank=True, null=True)
-    fall_deadline_graduation = models.DateField(blank=True, null=True)
+    fall_deadline_graduation = models.TextField(blank=True, null=True)
     fall_deadline_graduation_link = models.URLField(blank=True, null=True)
-    spring_deadline_UG = models.DateField(blank=True, null=True)
+    spring_deadline_UG = models.TextField(blank=True, null=True)
     spring_deadline_UG_link = models.URLField(blank=True, null=True)
-    spring_deadline_graduation = models.DateField(blank=True, null=True)
+    spring_deadline_graduation = models.TextField(blank=True, null=True)
     spring_deadline_graduation_link = models.URLField(blank=True, null=True)
     college_email = models.EmailField(blank=True, null=True)
     college_email_link = models.URLField(blank=True, null=True)
-    college_phone = models.CharField(max_length=15, blank=True, null=True)
+    college_phone = models.TextField(blank=True, null=True)
     college_phone_link = models.URLField(blank=True, null=True)
     international_person_email = models.EmailField(blank=True, null=True)
     international_person_email_link = models.URLField(blank=True, null=True)
@@ -86,7 +74,7 @@ class CollegesList(models.Model):
     UG_courses = models.TextField(blank=True, null=True)
     UG_courses_link = models.URLField(blank=True, null=True)
     graduation_courses = models.TextField(blank=True, null=True)
-    graduation_courses_link = models.URLField(blank=True, null=True)
+    graduation_course_link = models.URLField(blank=True, null=True)
 
     class Meta:
         db_table = 'collegelist'
@@ -169,3 +157,9 @@ class User(models.Model):
     phone_number = models.CharField(max_length=10)
     email_id = models.EmailField()
     enrolled_services = models.JSONField()
+
+    def __str__(self):
+        return self.user_id
+
+    class Meta:
+        db_table = 'User'
