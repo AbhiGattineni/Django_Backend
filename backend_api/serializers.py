@@ -5,6 +5,8 @@ from .models import Consultant
 from .models import CollegesList
 from .models import Consultant
 from .models import User
+from .models import AccessRoles
+from .models import Role
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,3 +35,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['user_id', 'full_name', 'first_name', 'last_name', 'phone_country_code', 'phone_number', 'email_id', 'enrolled_services']
+
+class AccessRolesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AccessRoles
+        fields = '__all__'
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = '__all__'

@@ -11,8 +11,8 @@ from .views import (
 from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, DeleteRoleView
 
 
-from .views import create_college, get_college, update_college, delete_college, get_all_colleges
-from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView
+from .views import create_college, get_college, update_college, delete_college, get_all_colleges,user_data_and_roles_view, assign_role
+from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView, DeleteUserAccessRoleView
 
 
 urlpatterns = [
@@ -35,4 +35,7 @@ urlpatterns = [
     path('colleges/<int:pk>/update/', update_college, name='update_college'),
     path('colleges/<int:pk>/delete/', delete_college, name='delete_college'),
     path('user/log-first-time/', log_first_time_user, name='log_first_time_user'),
+    path('api/user_and_role_overview/', user_data_and_roles_view, name='user_and_role_overview'),
+    path('assignrole/', assign_role, name='assign_role'),
+    path('deleteRole/<int:role_id>/', DeleteUserAccessRoleView.as_view(), name='delete_role'),
 ]

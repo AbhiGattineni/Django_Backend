@@ -13,8 +13,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User
-from .serializers import TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer
+from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role
+from .serializers import TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -286,3 +286,64 @@ def log_first_time_user(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#view to show all the user, roles, and assigned roles data.
+@api_view(['GET'])
+def user_data_and_roles_view(request):
+    # Fetching all users
+    users = User.objects.all()
+    users_serializer = UserSerializer(users, many=True)
+
+    # Fetching all roles
+    roles = AccessRoles.objects.all()
+    roles_serializer = AccessRolesSerializer(roles, many=True)
+
+    # Fetching all assigned roles
+    assigned_roles = Role.objects.all()
+    assigned_roles_serializer = RoleSerializer(assigned_roles, many=True)
+
+    # Combining all data in a single response
+    combined_data = {
+        'users': users_serializer.data,
+        'roles': roles_serializer.data,
+        'assigned_roles': assigned_roles_serializer.data,
+    }
+    return Response(combined_data, status=status.HTTP_200_OK)
+
+# view to assign a role to a user
+@api_view(['POST'])
+def assign_role(request):
+    print(request.data)
+    try:
+        user_id = request.data.get('user')
+        role_id = request.data.get('role')
+        print(user_id, role_id)
+        # Fetch user name and role name
+        try:
+            user_name = User.objects.get(user_id=user_id).full_name
+            role_name = AccessRoles.objects.get(id=role_id).name_of_role
+        except (User.DoesNotExist, AccessRoles.DoesNotExist):
+            return Response({'error': 'User or Role not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Create and save new Role
+        new_role = Role(user_id=user_id, name=user_name, role_name=role_name)
+        new_role.save()
+
+        return Response({'message': 'Role assigned successfully'}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        # Handle unexpected errors
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# view to delete a assogned role
+class DeleteUserAccessRoleView(APIView):
+    def delete(self, request, role_id):
+        try:
+            role = Role.objects.get(pk=role_id)
+            role.delete()
+            return Response({'message': 'Role deleted successfully'}, status=status.HTTP_200_OK)
+        except Role.DoesNotExist:
+            return Response({'error': 'Role not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
