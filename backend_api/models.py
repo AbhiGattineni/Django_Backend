@@ -179,3 +179,15 @@ class User(models.Model):
     def __str__(self):
         return self.user_id
 
+class Package(models.Model):
+    package_name = models.CharField(max_length=100)
+    includes = models.JSONField(default=list)  # Array of strings
+    excludes = models.JSONField(default=list)  # Array of strings
+    package_for = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'Packages'
+
+    def __str__(self):
+        return self.package_name
+

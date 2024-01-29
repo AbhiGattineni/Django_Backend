@@ -7,6 +7,7 @@ from .models import Consultant
 from .models import User, PartTimer
 from .models import AccessRoles
 from .models import Role
+from .models import Package
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -56,5 +57,10 @@ class RoleSerializer(serializers.ModelSerializer):
 class PartTimerSerializer(serializers.ModelSerializer):
     class Meta:
         model = PartTimer
+        fields = '__all__'
+
+class PackageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Package
         fields = '__all__'
 
