@@ -4,7 +4,7 @@ from .models import Person
 from .models import Consultant
 from .models import CollegesList
 from .models import Consultant
-from .models import User
+from .models import User, PartTimer
 from .models import AccessRoles
 from .models import Role
 
@@ -31,10 +31,17 @@ class ConsultantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consultant
         fields = '__all__'
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['user_id', 'full_name', 'first_name', 'last_name', 'phone_country_code', 'phone_number', 'email_id', 'enrolled_services']
+        fields = '__all__'
+        extra_kwargs = {
+            'user_id': {'required': True},
+            'phone_country_code': {'required': False},
+            'phone_number': {'required': False},
+            'enrolled_services': {'required': False}
+        }
 
 class AccessRolesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,3 +52,9 @@ class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
         fields = '__all__'
+
+class PartTimerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartTimer
+        fields = '__all__'
+

@@ -24,19 +24,20 @@ class Person(models.Model):
         return self.name
 
 class PartTimer(models.Model):
-    name = models.CharField(max_length=255)
-    email = models.EmailField()
-    phone = models.CharField(max_length=20)
-    dob = models.DateField()
-    address = models.CharField(max_length=255)
-    referred_by = models.CharField(max_length=255, blank=True, null=True) 
-    current_occupation = models.CharField(max_length=255)
-    is_student = models.BooleanField(default=False)  
-    course_of_study = models.CharField(max_length=255, blank=True, null=True)  
-    current_pursuing_year = models.IntegerField(blank=True, null=True)  
+    user = models.CharField(null=True, blank=True,max_length=100)
+    answered_questions = models.BooleanField(default=False)
+    current_occupation = models.CharField(max_length=100)
+    year_of_study = models.CharField(max_length=100, null=True, blank=True)  # Nullable, as it's conditional
+    course_name = models.CharField(max_length=100, null=True, blank=True)  # Nullable
+    referred_by = models.CharField(max_length=100, null=True, blank=True)  # Assuming this could be nullable
+
+    class Meta:
+        db_table = 'PartTimer'
 
     def __str__(self):
-        return self.name
+        return f"{self.user.full_name} - {self.current_occupation}"
+
+
 class Role(models.Model):
     user_id = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
@@ -161,16 +162,20 @@ class Consultant(models.Model):
         db_table = 'consultant_details'
 
 class User(models.Model):
-    user_id = models.CharField(max_length=100)
+    user_id = models.CharField(max_length=100, primary_key=True)
     full_name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    phone_country_code = models.CharField(max_length=4)
-    phone_number = models.CharField(max_length=10)
+    phone_country_code = models.CharField(max_length=4, blank=True, null=True)
+    phone_number = models.CharField(max_length=10, blank=True, null=True)
     email_id = models.EmailField()
-    enrolled_services = models.JSONField()
+    enrolled_services = models.JSONField(blank=True, null=True)
 
     class Meta:
         db_table = 'User'
-    def _str_(self):
+        # Specify that 'user_id' is the primary key
+        unique_together = (("user_id",),)
+
+    def __str__(self):
         return self.user_id
+
