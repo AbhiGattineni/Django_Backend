@@ -1,22 +1,48 @@
 # Environment variables
 .env
+.env.local
+.env.development.local
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
 
-# Database
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Pytest
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Flask specific
+instance/
+.webassets-cache
+
+# Django specific
 *.sqlite3
-
-# Media and static files
+db.sqlite3
+migrations/
+local_settings.py
 media/
 static/
 
-# Log files
-*.log
+# Packaging
+*.egg
+*.egg-info/
+dist/
+build/
+wheels/
+*.whl
 
-# Local settings
-local_settings.py
+# Coverage reports
+.coverage
+.coveragerc
 
 # IDE specific files
 .idea/
@@ -25,3 +51,9 @@ local_settings.py
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+
+# Node modules for frontend
+node_modules/
