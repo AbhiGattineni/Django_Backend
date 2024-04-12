@@ -11,8 +11,8 @@ from .views import (
 from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, DeleteRoleView
 
 
-from .views import create_college, get_college, update_college, delete_college, get_all_colleges,user_data_and_roles_view, assign_role
-from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView, DeleteUserAccessRoleView
+from .views import create_college, get_college, update_college, delete_college, get_all_colleges,user_data_and_roles_view, assign_role, create_part_timer
+from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView, DeleteUserAccessRoleView, PackageListCreateView, PackageDetailView
 
 
 urlpatterns = [
@@ -38,4 +38,8 @@ urlpatterns = [
     path('api/user_and_role_overview/', user_data_and_roles_view, name='user_and_role_overview'),
     path('assignrole/', assign_role, name='assign_role'),
     path('deleteRole/<int:role_id>/', DeleteUserAccessRoleView.as_view(), name='delete_role'),
+    path('part-timer/', create_part_timer, name='create_part_timer'),
+    path('get-part-timer/<str:user_id>/', views.get_part_timer, name='get_part_timer'),
+    path('packages/', PackageListCreateView.as_view(), name='package-list-create'),
+    path('packages/<int:pk>/', PackageDetailView.as_view(), name='package-detail'),
 ]

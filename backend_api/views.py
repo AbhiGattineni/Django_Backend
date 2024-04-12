@@ -12,9 +12,10 @@ from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics
 
-from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role
-from .serializers import TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer
+from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role, PartTimer, Package
+from .serializers import TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer, PartTimerSerializer, PackageSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -275,10 +276,17 @@ class ConsultantUpdateAPIView(APIView):
 
 @api_view(['POST'])
 def log_first_time_user(request):
-    # Check if user already exist
+    # Check if user already exists
     user_id = request.data.get('user_id')
     if user_id and User.objects.filter(user_id=user_id).exists():
-        return Response({'message': 'User already exists'}, status=status.HTTP_200_OK)
+        user = User.objects.get(user_id=user_id)
+
+        # Check if user has a related PartTimer entry with all questions answered as true
+        part_timer_entry = PartTimer.objects.filter(user=user).first()
+        if part_timer_entry and part_timer_entry.answered_questions:
+            return Response({'message': 'User already exists and answered all questions', 'all_questions_answered': True}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'User already exists but has not answered all questions', 'all_questions_answered': False}, status=status.HTTP_200_OK)
 
     # If user does not exist, create a new user
     serializer = UserSerializer(data=request.data)
@@ -286,6 +294,7 @@ def log_first_time_user(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 #view to show all the user, roles, and assigned roles data.
@@ -347,3 +356,78 @@ class DeleteUserAccessRoleView(APIView):
             return Response({'error': 'Role not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def create_part_timer(request):
+    try:
+        # Extract user_id and email from the request
+        user_id = request.data.get('user_id')
+        email = request.data.get('email')
+        
+        # Check if a User with the given user_id and email exists
+        user = User.objects.filter(user_id=user_id, email_id=email).first()
+
+        if user:
+
+            # Prepare and validate part-timer data
+            part_timer_data = request.data.copy()
+            part_timer_data['user'] = user.user_id  # Assign the User's user_id as the foreign key
+
+            part_timer_serializer = PartTimerSerializer(data=part_timer_data)
+
+            if part_timer_serializer.is_valid():
+                part_timer_serializer.save()
+                return Response(part_timer_serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                print("Errors:", part_timer_serializer.errors)
+                return Response(part_timer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            print("User not found.")
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print("An error occurred:", e)
+        return Response({"detail": "An error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def get_part_timer(request, user_id):
+    try:
+        # Find the part-timer information based on the user_id
+        part_timer = PartTimer.objects.filter(user=user_id).first()
+
+        if part_timer:
+            # Serialize the part-timer data
+            part_timer_serializer = PartTimerSerializer(part_timer)
+            return Response(part_timer_serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "Part-timer not found."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print("An error occurred:", e)
+        return Response({"detail": "An error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PackageListCreateView(generics.ListCreateAPIView):
+    queryset = Package.objects.all()
+    serializer_class = PackageSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PackageDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Package.objects.all()
+    serializer_class = PackageSerializer
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
