@@ -392,12 +392,13 @@ def create_part_timer(request):
 def get_part_timer(request, user_id):
     try:
         # Find the part-timer information based on the user_id
-        part_timer = PartTimer.objects.filter(user=user_id).first()
+        user = User.objects.get(user_id=user_id)
+        print(user)
 
-        if part_timer:
+        if user:
             # Serialize the part-timer data
-            part_timer_serializer = PartTimerSerializer(part_timer)
-            return Response(part_timer_serializer.data, status=status.HTTP_200_OK)
+            user_serializer = UserSerializer(user)
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"detail": "Part-timer not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
