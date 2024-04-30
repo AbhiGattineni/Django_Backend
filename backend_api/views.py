@@ -7,6 +7,12 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.utils import timezone
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import AcsParttimerStatus
+from datetime import datetime
 
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
@@ -431,4 +437,190 @@ class PackageDetailView(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
+@csrf_exempt
+def acsParttimerStatus_detail(request, application_id):
+    try:
+        application = AcsParttimerStatus.objects.get(id=application_id)
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "Application not found"}, status=404)
+    if request.method == "GET":
+        return JsonResponse({
+            "parttimerName": application.parttimerName,
+            "parttimerId": application.parttimerId,
+            "studentName": application.studentName,
+            "studentId": application.studentId,
+            "date": application.date,
+            "applicationsAppliedSearched": application.applicationsAppliedSearched,
+            "applicationsAppliedSaved": application.applicationsAppliedSaved,
+            "easyApply": application.easyApply,
+            "recruiterDirectMessages": application.recruiterDirectMessages,
+            "connectMessages": application.connectMessages,
+            "reason": application.reason,
+            "description": application.description
+        })
 
+@api_view(['POST'])
+@csrf_exempt
+def acsParttimerStatus_create(request):
+    print("request")
+    try:
+        print("Start of acsParttimerStatus_create view")
+        
+        if request.method == "POST":
+            print("POST request received")
+            data = request.data  # Use request.data for JSON data
+            
+            try:
+                print("Request data:", data)
+                
+                # Validate date to ensure it's not in the future
+                if data.get("date"):
+                    date_value = timezone.make_aware(timezone.datetime.strptime(data["date"], "%Y-%m-%d"))
+                    if date_value > timezone.now():
+                        return JsonResponse({"error": "Date cannot be in the future"}, status=400)
+                
+                # Check if there's an existing record with the same studentId, parttimerId, and date
+                existing_application = AcsParttimerStatus.objects.filter(
+                    studentId=data["studentId"],
+                    parttimerId=data["parttimerId"],
+                    date=data["date"]
+                ).first()
+                
+                if existing_application:
+                    return JsonResponse({"error": "Duplicate record found for the same group"}, status=400)
+                
+                # Create a new AcsParttimerStatus object
+                application = AcsParttimerStatus.objects.create(
+                    parttimerName=data["parttimerName"],
+                    parttimerId=data["parttimerId"],
+                    studentName=data["studentName"],
+                    studentId=data["studentId"],
+                    date=data["date"],
+                    applicationsAppliedSearched=data.get("applicationsAppliedSearched", 0),
+                    applicationsAppliedSaved=data.get("applicationsAppliedSaved", 0),
+                    easyApply=data.get("easyApply", 0),
+                    recruiterDirectMessages=data.get("recruiterDirectMessages", ""),
+                    connectMessages=data.get("connectMessages", ""),
+                    reason=data.get("reason", ""),
+                    description=data.get("description", "")
+                )
+                
+                print("Application saved successfully")
+                return JsonResponse({"message": "Application saved successfully"})
+            
+            except KeyError as e:
+                print("KeyError:", e)
+                field = e.args[0]
+                return JsonResponse({"error": f"{field} required fields are missing"}, status=400)
+            
+            except Exception as e:
+                print("An error occurred:", e)
+                return JsonResponse({"error": "An error occurred"}, status=500)
+        
+    except Exception as e:
+        print("An error occurred:", e)
+        return JsonResponse({"error": "An error occurred"}, status=500)
+
+
+@api_view(['PUT'])
+@csrf_exempt
+def acsParttimerStatus_update(request, application_id):
+    try:
+        application = AcsParttimerStatus.objects.get(id=application_id)
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "Application not found"}, status=404)
+
+    if request.method == "PUT":
+        data = request.POST
+        try:
+            # Validate date to ensure it's not in the future
+            if data.get("date"):
+                date_value = timezone.make_aware(timezone.datetime.strptime(data["date"], "%Y-%m-%d"))
+                if date_value > timezone.now():
+                    return JsonResponse({"error": "Date cannot be in the future"}, status=400)
+
+            # Check if an entry with the same user_id and date already exists
+            existing_application = AcsParttimerStatus.objects.filter(user_id=data["user_id"], date=data["date"]).first()
+            if existing_application and existing_application.id != application_id:
+                return JsonResponse({"error": "An application with the same student ID and date already exists"}, status=400)
+
+            # Update application data based on request data
+            application.parttimerName = data["parttimerName"]
+            application.parttimerId = data["parttimerId"]
+            application.studentName = data["studentName"]
+            application.studentId = data["studentId"]
+            application.date = data["date"]
+            application.applicationsAppliedSearched = data.get("applicationsAppliedSearched", application.applicationsAppliedSearched)
+            application.applicationsAppliedSaved = data.get("applicationsapplicationsAppliedSaved", application.applicationsapplicationsAppliedSaved)
+            application.easyApply = data.get("easyeasyApply", application.easyeasyApply)
+            application.recruiterDirectMessages = data.get("recruiter_direct_messages", application.recruiter_direct_messages)
+            application.connectMessages = data.get("connect_messages", application.connect_messages)
+            application.reason = data.get("reason", application.reason)
+            application.description = data.get("description", application.description)
+            application.full_clean()  # Validate model fields
+            application.save()
+            return JsonResponse({"message": "Application updated successfully"})
+        except (KeyError, ValidationError) as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+@api_view(['DELETE'])
+@csrf_exempt
+def acsParttimerStatus_delete(request, application_id):
+    try:
+        application = AcsParttimerStatus.objects.get(id=application_id)
+        application.delete()
+        return JsonResponse({"message": "Application deleted successfully"}, status=204)
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "Application not found"}, status=404)
+
+@api_view(['GET'])
+@csrf_exempt
+def application_list(request):
+    if request.method == "GET":
+        applications = AcsParttimerStatus.objects.all()
+        data = []
+        for application in applications:
+            data.append({
+                "parttimerName": application.parttimerName,
+                "parttimerId": application.parttimerId,
+                "studentName": application.studentName,
+                "studentId": application.studentId,
+                "date": application.date,
+                "applicationsAppliedSearched": application.applicationsAppliedSearched,
+                "applicationsAppliedSaved": application.applicationsAppliedSaved,
+                "easyApply": application.easyApply,
+                "recruiterDirectMessages": application.recruiterDirectMessages,
+                "connectMessages": application.connectMessages,
+                "reason": application.reason,
+                "description": application.description,
+            })
+        return JsonResponse(data, safe=False)
+
+@api_view(['GET'])
+@csrf_exempt
+def application_detail_by_id_and_date(request, id, date):
+    try:
+        # Convert date string to datetime object
+        date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+        # Retrieve application based on id and date
+        application = AcsParttimerStatus.objects.get(id=id, date=date_obj)
+        
+        return JsonResponse({
+            "parttimerName": application.parttimerName,
+            "parttimerId": application.parttimerId,
+            "studentName": application.studentName,
+            "studentId": application.studentId,
+            "date": application.date,
+            "applicationsAppliedSearched": application.applicationsAppliedSearched,
+            "applicationsAppliedSaved": application.applicationsAppliedSaved,
+            "easyApply": application.easyApply,
+            "recruiterDirectMessages": application.recruiterDirectMessages,
+            "connectMessages": application.connectMessages,
+            "reason": application.reason,
+            "description": application.description
+        })
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "Application not found"}, status=404)
+    except ValueError:
+        return JsonResponse({"error": "Invalid date format. Please use 'YYYY-MM-DD'."}, status=400)

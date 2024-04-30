@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
-
+from django.core.validators import MaxValueValidator
+from django.utils import timezone
 
 class Todo(models.Model):
     task = models.CharField(max_length = 180)
@@ -191,3 +192,22 @@ class Package(models.Model):
     def __str__(self):
         return self.package_name
 
+class AcsParttimerStatus(models.Model):
+    parttimerName = models.CharField(max_length=100, blank=False)
+    parttimerId = models.CharField(max_length=20, blank=False)
+    studentName = models.CharField(max_length=100, blank=False)
+    studentId = models.CharField(max_length=20)
+    date = models.DateField(blank=False, validators=[MaxValueValidator(timezone.now().date())])
+    applicationsAppliedSearched = models.IntegerField(default=0)
+    applicationsAppliedSaved = models.IntegerField(default=0)
+    easyApply = models.IntegerField(default=0)
+    recruiterDirectMessages = models.CharField(max_length=200, blank=True, null=True)
+    connectMessages = models.CharField(max_length=200, blank=True, null=True)
+    reason = models.CharField(max_length=500, blank=True, null=True)
+    description= models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        db_table = 'PartTimer_status'
+
+    def __str__(self):
+        return f"{self.parttimerName}'s Application on {self.date}"

@@ -10,7 +10,7 @@ from .views import (
 
 from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, DeleteRoleView
 
-
+from backend_api.views import acsParttimerStatus_detail, acsParttimerStatus_update, acsParttimerStatus_create, acsParttimerStatus_delete, application_list, application_detail_by_id_and_date
 from .views import create_college, get_college, update_college, delete_college, get_all_colleges,user_data_and_roles_view, assign_role, create_part_timer
 from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView, DeleteUserAccessRoleView, PackageListCreateView, PackageDetailView
 
@@ -42,4 +42,10 @@ urlpatterns = [
     path('get-part-timer/<str:user_id>/', views.get_part_timer, name='get_part_timer'),
     path('packages/', PackageListCreateView.as_view(), name='package-list-create'),
     path('packages/<int:pk>/', PackageDetailView.as_view(), name='package-detail'),
+    path('acs-parttimer-status/<str:application_id>/', acsParttimerStatus_detail),
+    path('acs-parttimer-status/create/', acsParttimerStatus_create, name='acs-parttimer-create'),
+    path('acs-parttimer-status/<str:application_id>/update/', acsParttimerStatus_update),
+    path('acs-parttimer-status/<str:application_id>/delete/', acsParttimerStatus_delete),
+    path('application-list/', application_list),
+    path('application-detail/<str:id>/<str:date>/', application_detail_by_id_and_date),
 ]

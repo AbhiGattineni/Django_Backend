@@ -8,6 +8,7 @@ from .models import User, PartTimer
 from .models import AccessRoles
 from .models import Role
 from .models import Package
+from .models import AcsParttimerStatus
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,3 +65,7 @@ class PackageSerializer(serializers.ModelSerializer):
         model = Package
         fields = '__all__'
 
+class AcsParttimerStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AcsParttimerStatus
+        fields = '__all__'
