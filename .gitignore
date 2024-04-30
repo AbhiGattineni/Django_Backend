@@ -1,11 +1,6 @@
-# Environment variables
-.env
-.env.local
-.env.development.local
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
 *.pyd
 
@@ -14,46 +9,44 @@ venv/
 env/
 .venv/
 
-# Pytest
-.pytest_cache/
-
-# Jupyter Notebook
-.ipynb_checkpoints/
-
-# Flask specific
-instance/
-.webassets-cache
-
 # Django specific
 *.sqlite3
 db.sqlite3
-migrations/
-local_settings.py
-media/
-static/
+/migrations/
+/media/
+/static/
 
-# Packaging
-*.egg
-*.egg-info/
-dist/
-build/
-wheels/
-*.whl
-
-# Coverage reports
-.coverage
-.coveragerc
-
-# IDE specific files
+# IDE and editors
 .idea/
 .vscode/
 
-# OS generated files
+# Operating system files
 .DS_Store
 Thumbs.db
 
 # Logs
 *.log
 
-# Node modules for frontend
+# Node modules
 node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+
+# Python artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+wheels/
+*.whl
+
+# Test and coverage
+.coverage
+.coveragerc
+.pytest_cache/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
