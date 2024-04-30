@@ -43,7 +43,7 @@ urlpatterns = [
     path('packages/', PackageListCreateView.as_view(), name='package-list-create'),
     path('packages/<int:pk>/', PackageDetailView.as_view(), name='package-detail'),
     path('acs-parttimer-status/<str:application_id>/', acsParttimerStatus_detail),
-    path('acs-parttimer-status/create/', acsParttimerStatus_create, name='acs-parttimer-create'),
+    path('acs_parttimer_status/create/', acsParttimerStatus_create, name='acs-parttimer-create'),
     path('acs-parttimer-status/<str:application_id>/update/', acsParttimerStatus_update),
     path('acs-parttimer-status/<str:application_id>/delete/', acsParttimerStatus_delete),
     path('application-list/', application_list),
