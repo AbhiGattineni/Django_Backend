@@ -475,7 +475,7 @@ def acsParttimerStatus_create(request):
                 if data.get("date"):
                     date_value = timezone.make_aware(timezone.datetime.strptime(data["date"], "%Y-%m-%d"))
                     if date_value > timezone.now():
-                        return JsonResponse({"error": "Date cannot be in the future"}, status=400)
+                        return JsonResponse({"message": "Date cannot be in the future"}, status=400)
                 
                 # Check if there's an existing record with the same studentId, parttimerId, and date
                 existing_application = AcsParttimerStatus.objects.filter(
@@ -485,7 +485,7 @@ def acsParttimerStatus_create(request):
                 ).first()
                 
                 if existing_application:
-                    return JsonResponse({"error": "Duplicate record found"}, status=400)
+                    return JsonResponse({"message": "Already submitted..!"}, status=400)
                 
                 # Create a new AcsParttimerStatus object
                 application = AcsParttimerStatus.objects.create(
@@ -503,23 +503,22 @@ def acsParttimerStatus_create(request):
                     description=data.get("description", "")
                 )
                 
-                return JsonResponse({"message": "Application saved successfully"})
+                return JsonResponse({"message": "Status saved successfully"})
             
             except KeyError as e:
                 field = e.args[0]
-                return JsonResponse({"error": f"{field} required field is missing"}, status=400)
+                return JsonResponse({"message": f"{field} required field is missing"}, status=400)
             
             except Exception as e:
-                return JsonResponse({"error": "An error occurred"}, status=500)
+                return JsonResponse({"message": "Something went wrong! Try again."}, status=500)
         
     except Exception as e:
-        return JsonResponse({"error": "An error occurred"}, status=500)
+        return JsonResponse({"message": "Something went wrong! Try again."}, status=500)
 
 
 @api_view(['PUT'])
 @csrf_exempt
 def acsParttimerStatus_update(request):
-    print("hello")
     try:
         if request.method == "PUT":
             data = request.data  # Use request.data for JSON data
@@ -545,19 +544,19 @@ def acsParttimerStatus_update(request):
                     existing_application.description = data.get("description", "")
                     existing_application.save()
                     
-                    return JsonResponse({"message": "Application updated successfully"})
+                    return JsonResponse({"message": "Status updated successfully"})
                 else:
-                    return JsonResponse({"error": "No record found to update"}, status=404)
+                    return JsonResponse({"message": "No record found to update"}, status=404)
             
             except KeyError as e:
                 field = e.args[0]
-                return JsonResponse({"error": f"{field} required field is missing"}, status=400)
+                return JsonResponse({"message": f"{field} required field is missing"}, status=400)
             
             except Exception as e:
-                return JsonResponse({"error": "An error occurred"}, status=500)
+                return JsonResponse({"message": "An error occurred"}, status=500)
         
     except Exception as e:
-        return JsonResponse({"error": "An error occurred"}, status=500)
+        return JsonResponse({"message": "An error occurred"}, status=500)
 
 @api_view(['DELETE'])
 @csrf_exempt
