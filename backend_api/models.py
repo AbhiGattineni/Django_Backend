@@ -194,9 +194,9 @@ class Package(models.Model):
 
 class AcsParttimerStatus(models.Model):
     parttimerName = models.CharField(max_length=100, blank=False)
-    parttimerId = models.CharField(max_length=20, blank=False)
+    parttimerId = models.CharField(max_length=100, blank=False)
     studentName = models.CharField(max_length=100, blank=False)
-    studentId = models.CharField(max_length=20)
+    studentId = models.CharField(max_length=100)
     date = models.DateField(blank=False, validators=[MaxValueValidator(timezone.now().date())])
     applicationsAppliedSearched = models.IntegerField(default=0)
     applicationsAppliedSaved = models.IntegerField(default=0)
