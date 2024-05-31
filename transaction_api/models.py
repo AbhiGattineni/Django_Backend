@@ -9,12 +9,22 @@ def validate_subsidiary(value):
         raise ValidationError(f"{value} is not a valid subsidiary")
 
 def validate_transaction_type(value):
-    valid_transaction_types = ['cash', 'upi', 'bank_transfer']
+    valid_transaction_types = ['credit', 'debit']
     if value not in valid_transaction_types:
         raise ValidationError(f"{value} is not a valid transaction type")
+    
+def validate_payment_type(value):
+    valid_transaction_types = ['cash', 'upi', 'bank_transfer']
+    if value not in valid_transaction_types:
+        raise ValidationError(f"{value} is not a valid payment type")
 
 class Transaction(models.Model):
     TRANSACTION_TYPE_CHOICES = [
+        ('credit', 'Credit'),
+        ('debit', 'Debit'),
+    ]
+    
+    PAYMENT_TYPE_CHOICES = [
         ('cash', 'Cash'),
         ('upi', 'UPI'),
         ('bank_transfer', 'Bank Transfer'),
@@ -39,7 +49,8 @@ class Transaction(models.Model):
     debited_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=False, null=False)
     transaction_datetime = models.DateTimeField(blank=False, null=False)
     uploaded_datetime = models.DateTimeField(default=timezone.now, blank=False, null=False)
-    transaction_type = models.CharField(max_length=50, blank=False, null=False, choices=TRANSACTION_TYPE_CHOICES, validators=[validate_transaction_type])
+    transaction_type  = models.CharField(max_length=50, blank=False, null=False, choices=TRANSACTION_TYPE_CHOICES, validators=[validate_transaction_type])
+    payment_type = models.CharField(max_length=50, blank=False, null=False, choices=PAYMENT_TYPE_CHOICES, validators=[validate_payment_type])
     subsidiary = models.CharField(max_length=20, blank=False, null=False, choices=SUBSIDIARY_CHOICES, validators=[validate_subsidiary])
     currency = models.CharField(max_length=3, blank=False, null=False)
     description = models.TextField(blank=False, null=False)
