@@ -3,8 +3,8 @@ autopep8==1.6.0
 certifi==2022.5.18.1
 charset-normalizer==2.0.12
 distlib==0.3.6
-Django==3.2.9
-django-cors-headers==4.1.0
+Django==4.0.5
+django-cors-headers==4.3.1
 django-extensions==3.1.5
 django-rest-framework==0.1.0
 django-seed==0.3.1
@@ -13,7 +13,7 @@ factory-boy==3.2.1
 Faker==13.13.0
 filelock==3.12.0
 idna==3.3
-mysqlclient==2.1.1
+mysqlclient==2.2.0
 Pillow==9.1.1
 pipenv==2023.4.29
 platformdirs==3.5.1
@@ -22,14 +22,15 @@ psycopg2==2.9.3
 pycodestyle==2.8.0
 PyMySQL==1.1.0
 python-dateutil==2.8.2
-python-dotenv==0.21.1
+python-dotenv==1.0.0
 pytz==2022.1
 requests==2.28.0
+shortuuid==1.0.13
 six==1.16.0
 sqlparse==0.4.2
 toml==0.10.2
 toposort==1.7
-typing_extensions==4.7.1
+typing_extensions==4.9.0
 tzdata==2022.1
 urllib3==1.26.9
 virtualenv==20.23.0
