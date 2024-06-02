@@ -7,12 +7,22 @@ services:
       - "8000:8000"
     depends_on:
       - db
-
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - MYSQL_DB=${MYSQL_DB}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - DB_ENGINE=${DB_ENGINE}
+      - DB_PORT=${DB_PORT}
   db:
     image: mysql
     ports:
-      - "3307:3306"
+      - "3306:3306"
     environment:
-      - MYSQL_DB=${DB_NAME}
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${AWS_PASSWORD}
+      - MYSQL_DB=${MYSQL_DB}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - DB_ENGINE=${DB_ENGINE}
+      - DB_PORT=${DB_PORT}
