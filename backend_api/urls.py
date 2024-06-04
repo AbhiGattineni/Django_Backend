@@ -5,7 +5,12 @@ from . import views
 from .views import (
     TodoListApiView,
     TodoDetailApiView,
-    log_first_time_user
+    create_status,
+    delete_status_by_id,
+    get_status,
+    # get_status_by_id,
+    log_first_time_user,
+    update_status_by_id
 )
 
 from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, DeleteRoleView
@@ -48,4 +53,9 @@ urlpatterns = [
     path('acs_parttimer_status_delete', acsParttimerStatus_delete),
     path('acs_parttimer_status_all', application_list),
     path('acs_parttimer_status/<str:id>/<str:date>', application_detail_by_id_and_date),
+    path('create_status_update', create_status, name='create_status_update'),
+    path('get_status_update', get_status, name='get_status_update'),
+    # path('get_status_by_id/<str:user_id>', get_status_by_id, name='get_status_by_id'),
+    path('update_status_by_id', update_status_by_id, name='update_status_by_id'),
+    path('delete_status_by_id', delete_status_by_id, name='delete_status_by_id')
 ]
