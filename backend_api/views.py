@@ -658,16 +658,25 @@ def get_status(request):
     else:
         return JsonResponse({'message': 'Invalid request method'}, status=405)
     
+@api_view(['GET'])
+@csrf_exempt
+def get_status_by_id(request, user_id):
+    if request.method == 'GET':
+        try:
+            status = StatusUpdates.objects.filter(user_id=user_id)
+            if status.exists():
+                status_data = list(status.values())
+                return JsonResponse(status_data, safe=False)
+            else:
+                return JsonResponse({'message': 'No status updates found for this user'}, status=404)
+        except StatusUpdates.DoesNotExist:
+            return JsonResponse({'message': 'Invalid user ID'}, status=400)
+    else:
+        return JsonResponse({'message': 'Invalid request method'}, status=405)
+
 @api_view(['POST'])
 @csrf_exempt
 def create_status(request):
-    # if request.method == 'POST':
-    #     data = JSONParser().parse(request)
-    #     serializer = StatusUpdatesSerializer(data=data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return JsonResponse(serializer.data, status=201)
-    #     return JsonResponse(serializer.errors, status=400)
     try:
         if request.method == "POST":
             data = request.data  # Use request.data for JSON data
@@ -708,11 +717,11 @@ def create_status(request):
     except Exception as e:
         return JsonResponse({"message": "Something went wrong!"}, status=500)
     
-@api_view(['GET'])
+@api_view(['POST'])
 @csrf_exempt
 def get_status(request):
-    if request.method != 'GET':
-        return JsonResponse({'error': 'Only GET method is allowed.'}, status=405)
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method is allowed.'}, status=405)
 
     try:
         data = json.loads(request.body)
@@ -751,7 +760,7 @@ def get_status(request):
         # Add date range filter
         filters['date__range'] = [start_date, end_date]
 
-    # Query transactions based on filters
+    # Query status updates based on filters
     status = StatusUpdates.objects.filter(**filters)
 
     # Convert queryset to list of dictionaries

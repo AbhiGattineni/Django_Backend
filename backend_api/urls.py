@@ -16,7 +16,7 @@ from .views import (
 from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, DeleteRoleView
 
 from backend_api.views import acsParttimerStatus_detail, acsParttimerStatus_update, acsParttimerStatus_create, acsParttimerStatus_delete, application_list, application_detail_by_id_and_date
-from .views import create_college, get_college, update_college, delete_college, get_all_colleges,user_data_and_roles_view, assign_role, create_part_timer
+from .views import create_college, get_college, update_college, delete_college, get_all_colleges,user_data_and_roles_view, assign_role, create_part_timer, get_status_by_id
 from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView, DeleteUserAccessRoleView, PackageListCreateView, PackageDetailView
 
 
@@ -55,7 +55,7 @@ urlpatterns = [
     path('acs_parttimer_status/<str:id>/<str:date>', application_detail_by_id_and_date),
     path('create_status_update', create_status, name='create_status_update'),
     path('get_status_update', get_status, name='get_status_update'),
-    # path('get_status_by_id/<str:user_id>', get_status_by_id, name='get_status_by_id'),
+    path('get_status_by_id/<str:user_id>', get_status_by_id, name='get_status_by_id'),
     path('update_status_by_id', update_status_by_id, name='update_status_by_id'),
     path('delete_status_by_id', delete_status_by_id, name='delete_status_by_id')
 ]
