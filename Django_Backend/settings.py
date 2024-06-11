@@ -109,13 +109,13 @@ WSGI_APPLICATION = 'Django_Backend.wsgi.application'
 # }
 
 DATABASES = {
-    'default': {
+     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.getenv('DB_NAME', 'default_db_name'),
-        'HOST': os.getenv('HOST', 'localhost'),
-        'USER': os.getenv('DB_USER', ''),
-        'PASSWORD': os.getenv('AWS_PASSWORD', ''),
-        'PORT': os.getenv('DB_PORT', '')
+        'NAME': os.getenv('MYSQL_DB', 'default_db_name'),
+        'HOST': os.getenv('MYSQL_HOST', 'localhost'),
+        'USER': os.getenv('MYSQL_USER', ''),
+        'PASSWORD': os.getenv('MYSQL_ROOT_PASSWORD', ''),
+        'PORT': os.getenv('DB_PORT','3306')
     }
 }
 

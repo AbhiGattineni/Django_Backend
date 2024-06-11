@@ -15,8 +15,8 @@ def validate_subsidiary(value):
     return value in valid_subsidiaries
 
 def validate_transaction_type(value):
-    valid_transaction_types = ['cash', 'upi', 'bank_transfer']
-    return value in valid_transaction_types
+    valid_payment_types = ['cash', 'upi', 'bank_transfer']
+    return value in valid_payment_types
 
 @csrf_exempt
 def create_transaction(request):
@@ -45,8 +45,9 @@ def get_transaction(request, transaction_id):
         'accountant_id': transaction.accountant_id,
         'credited_amount': str(transaction.credited_amount),
         'debited_amount': str(transaction.debited_amount),
-        'transaction_datetime': transaction.transaction_datetime.strftime('%Y-%m-%d %H:%M:%S'),
-        'uploaded_datetime': transaction.uploaded_datetime.strftime('%Y-%m-%d %H:%M:%S'),
+        'transaction_datetime': transaction.transaction_datetime,
+        'uploaded_datetime': transaction.uploaded_datetime,
+        'payment_type': transaction.payment_type,
         'transaction_type': transaction.transaction_type,
         'subsidiary': transaction.subsidiary,
         'currency': transaction.currency,
@@ -69,6 +70,7 @@ def update_transaction(request, transaction_id):
         transaction.credited_amount = data.get('credited_amount', transaction.credited_amount)
         transaction.debited_amount = data.get('debited_amount', transaction.debited_amount)
         transaction.transaction_datetime = data.get('transaction_datetime', transaction.transaction_datetime)
+        transaction.payment_type = data.get('payment_type', transaction.payment_type)
         transaction.transaction_type = data.get('transaction_type', transaction.transaction_type)
         transaction.subsidiary = data.get('subsidiary', transaction.subsidiary)
         transaction.currency = data.get('currency', transaction.currency)
@@ -107,6 +109,8 @@ def get_transactions_by_fields(request):
         receiver_id = data.get('receiver_id')
         sender_id = data.get('sender_id')
         accountant_id = data.get('accountant_id')
+        transaction_type = data.get('transaction_type')
+        subsidiary = data.get('subsidiary')
 
         # Build filter dictionary
         if receiver_id:
@@ -115,6 +119,10 @@ def get_transactions_by_fields(request):
             filters['sender_id'] = sender_id
         if accountant_id:
             filters['accountant_id'] = accountant_id
+        if transaction_type:
+            filters['transaction_type'] = transaction_type
+        if subsidiary:
+            filters['subsidiary'] = subsidiary
 
         # Query transactions based on filters
         transactions = Transaction.objects.filter(**filters)
@@ -160,3 +168,62 @@ def transaction_date_range_view(request):
     transactions_data = list(transactions.values())
 
     return JsonResponse(transactions_data, safe=False, status=200)
+
+@csrf_exempt  # Use this decorator if you're testing without CSRF tokens
+def get_filter_transactions(request):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Only GET method is allowed.'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON.'}, status=400)
+
+    filters = {}
+
+    # Extract common fields from the request body
+    receiver_id = data.get('receiver_id')
+    sender_id = data.get('sender_id')
+    accountant_id = data.get('accountant_id')
+    transaction_type = data.get('transaction_type')
+    subsidiary = data.get('subsidiary')
+
+    # Build filter dictionary
+    if receiver_id:
+        filters['receiver_id'] = receiver_id
+    if sender_id:
+        filters['sender_id'] = sender_id
+    if accountant_id:
+        filters['accountant_id'] = accountant_id
+    if transaction_type:
+        filters['transaction_type'] = transaction_type
+    if subsidiary:
+        filters['subsidiary'] = subsidiary
+
+    # Extract date range fields
+    start_date = data.get('start_date')
+    end_date = data.get('end_date')
+
+    if start_date and end_date:
+        try:
+            # Parsing the dates to ensure they are valid
+            start_date = parse_datetime(start_date)
+            end_date = parse_datetime(end_date)
+            if not start_date or not end_date:
+                raise ValueError
+        except (TypeError, ValueError):
+            return JsonResponse({'error': 'Invalid date format. Use ISO 8601 format.'}, status=400)
+
+        if start_date > end_date:
+            return JsonResponse({'error': 'start_date must be before end_date.'}, status=400)
+
+        # Add date range filter
+        filters['transaction_datetime__range'] = [start_date, end_date]
+
+    # Query transactions based on filters
+    transactions = Transaction.objects.filter(**filters)
+
+    # Convert queryset to list of dictionaries
+    transaction_data = list(transactions.values())
+
+    return JsonResponse(transaction_data, safe=False, status=200)
