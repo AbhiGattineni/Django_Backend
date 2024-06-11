@@ -1,3 +1,10 @@
+# Django specific files
+*.log
+*.pot
+*.pyc
+__pycache__/
+*.swp
+
 # Environment variables
 .env
 .env.local
