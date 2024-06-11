@@ -12,7 +12,10 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import AcsParttimerStatus
+from .models import StatusUpdates
+from rest_framework.parsers import JSONParser
 from datetime import datetime
+from django.utils.dateparse import parse_datetime
 
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
@@ -21,7 +24,7 @@ from rest_framework.views import APIView
 from rest_framework import generics
 
 from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role, PartTimer, Package
-from .serializers import TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer, PartTimerSerializer, PackageSerializer
+from .serializers import StatusUpdatesSerializer, TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer, PartTimerSerializer, PackageSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -643,3 +646,184 @@ def application_detail_by_id_and_date(request, id, date):
             return JsonResponse({"error": "No applications found for the given parttimerId and date"}, status=404)
     except ValueError:
         return JsonResponse({"error": "Invalid date format. Please use 'YYYY-MM-DD'."}, status=400)
+    
+# Status Updates
+@api_view(['GET'])
+@csrf_exempt
+def get_status(request):
+    if request.method == 'GET':
+        status = StatusUpdates.objects.all()
+        status_data = list(status.values())
+        return JsonResponse(status_data, safe=False)
+    else:
+        return JsonResponse({'message': 'Invalid request method'}, status=405)
+    
+@api_view(['GET'])
+@csrf_exempt
+def get_status_by_id(request, user_id):
+    if request.method == 'GET':
+        try:
+            status = StatusUpdates.objects.filter(user_id=user_id)
+            if status.exists():
+                status_data = list(status.values())
+                return JsonResponse(status_data, safe=False)
+            else:
+                return JsonResponse({'message': 'No status updates found for this user'}, status=404)
+        except StatusUpdates.DoesNotExist:
+            return JsonResponse({'message': 'Invalid user ID'}, status=400)
+    else:
+        return JsonResponse({'message': 'Invalid request method'}, status=405)
+
+@api_view(['POST'])
+@csrf_exempt
+def create_status(request):
+    try:
+        if request.method == "POST":
+            data = request.data  # Use request.data for JSON data
+            
+            try:
+                # Validate date to ensure it's not in the future
+                if data.get("date"):
+                    date_value = timezone.make_aware(timezone.datetime.strptime(data["date"], "%Y-%m-%d"))
+                    if date_value > timezone.now():
+                        return JsonResponse({"message": "Date cannot be in the future"}, status=400)
+                
+                # Check if there's an existing record with the same studentId, parttimerId, and date
+                existing_application = StatusUpdates.objects.filter(
+                    user_id=data["user_id"],
+                    date=data["date"]
+                ).first()
+                
+                if existing_application:
+                    return JsonResponse({"message": "Already submitted..!"}, status=400)
+                
+                # Create a new AcsParttimerStatus object
+                StatusUpdates.objects.create(
+                    user_id = data["user_id"],
+                    user_name = data["user_name"],
+                    date = data["date"],
+                    status = data["status"]
+                )
+                
+                return JsonResponse({"message": "Status saved successfully"})
+            
+            except KeyError as e:
+                field = e.args[0]
+                return JsonResponse({"message": f"{field} required field is missing"}, status=400)
+            
+            except Exception as e:
+                return JsonResponse({"message": "Something went wrong! Try again."}, status=500)
+        
+    except Exception as e:
+        return JsonResponse({"message": "Something went wrong!"}, status=500)
+    
+@api_view(['POST'])
+@csrf_exempt
+def get_status(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method is allowed.'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON.'}, status=400)
+
+    filters = {}
+
+    # Extract common fields from the request body
+    user_id = data.get("user_id")
+    date = data.get("date")
+
+    # Build filter dictionary
+    if user_id:
+        filters['user_id'] = user_id
+    if date:
+        filters['date'] = date
+
+    # Extract date range fields
+    start_date = data.get('start_date')
+    end_date = data.get('end_date')
+
+    if start_date and end_date:
+        try:
+            # Parsing the dates to ensure they are valid
+            start_date = parse_datetime(start_date)
+            end_date = parse_datetime(end_date)
+            if not start_date or not end_date:
+                raise ValueError
+        except (TypeError, ValueError):
+            return JsonResponse({'error': 'Invalid date format. Use ISO 8601 format.'}, status=400)
+
+        if start_date > end_date:
+            return JsonResponse({'error': 'start_date must be before end_date.'}, status=400)
+
+        # Add date range filter
+        filters['date__range'] = [start_date, end_date]
+
+    # Query status updates based on filters
+    status = StatusUpdates.objects.filter(**filters)
+
+    # Convert queryset to list of dictionaries
+    status_data = list(status.values())
+
+    return JsonResponse(status_data, safe=False, status=200)
+
+@api_view(['PUT'])
+@csrf_exempt
+def update_status_by_id(request):
+    try:
+        if request.method == "PUT":
+            data = request.data  # Use request.data for JSON data
+            
+            try:
+                # Check if there's an existing record with the same studentId, parttimerId, and date
+                existing_application = StatusUpdates.objects.filter(
+                    user_id=data["user_id"],
+                    date=data["date"]
+                ).first()
+                
+                if existing_application:
+                    # Update existing application
+                    existing_application.user_id = data["user_id"]
+                    existing_application.user_name = data["user_name"]
+                    existing_application.date = data["date"]
+                    existing_application.status = data["status"]
+                    existing_application.save()
+                    
+                    return JsonResponse({"message": "Status updated successfully"})
+                else:
+                    return JsonResponse({"message": "No record found to update"}, status=404)
+            
+            except KeyError as e:
+                field = e.args[0]
+                return JsonResponse({"message": f"{field} required field is missing"}, status=400)
+            
+            except Exception as e:
+                return JsonResponse({"message": "An error occurred"}, status=500)
+        
+    except Exception as e:
+        return JsonResponse({"message": "An error occurred"}, status=500)
+
+@api_view(['DELETE'])
+@csrf_exempt
+def delete_status_by_id(request):
+    try:
+        data = request.data  # Use request.data for JSON data
+        
+        # Check if there's an existing record with the provided criteria
+        existing_application = StatusUpdates.objects.filter(
+            user_id=data["user_id"],
+            date=data["date"]
+        ).first()
+        
+        if existing_application:
+            existing_application.delete()
+            return JsonResponse({"message": "Application deleted successfully"}, status=204)
+        else:
+            return JsonResponse({"error": "Application not found"}, status=404)
+        
+    except KeyError as e:
+        field = e.args[0]
+        return JsonResponse({"error": f"{field} required field is missing"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": "An error occurred"}, status=500)

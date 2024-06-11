@@ -211,3 +211,16 @@ class AcsParttimerStatus(models.Model):
 
     def __str__(self):
         return f"{self.parttimerName}'s Application on {self.date}"
+
+
+class StatusUpdates(models.Model):
+    user_id = models.CharField(max_length=100, blank=False)
+    user_name = models.CharField(max_length=100, blank=False)
+    date = models.DateField(blank=False, validators=[MaxValueValidator(timezone.now().date)])
+    status = models.CharField(max_length=100, blank=False)
+
+    class Meta:
+        db_table = 'Status_updates'
+
+    def __str__(self):
+        return f"{self.user_name}'s status added on {self.date}"
