@@ -215,7 +215,7 @@ def get_college(request, pk):
     try:
         college = CollegesList.objects.get(pk=pk)
     except CollegesList.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "College not found."}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = CollegesListSerializer(college)
@@ -226,7 +226,7 @@ def update_college(request, pk):
     try:
         college = CollegesList.objects.get(pk=pk)
     except CollegesList.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "College not found."}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
         serializer = CollegesListSerializer(college, data=request.data)
@@ -240,11 +240,11 @@ def delete_college(request, pk):
     try:
         college = CollegesList.objects.get(pk=pk)
     except CollegesList.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "College not found."}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'DELETE':
         college.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "College successfully deleted."}, status=status.HTTP_204_NO_CONTENT)
 
 class ConsultantListAPIView(APIView):
     def get(self, request, format=None):
