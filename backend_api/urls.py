@@ -57,5 +57,9 @@ urlpatterns = [
     path('get_status_update', get_status, name='get_status_update'),
     path('get_status_by_id/<str:user_id>', get_status_by_id, name='get_status_by_id'),
     path('update_status_by_id', update_status_by_id, name='update_status_by_id'),
-    path('delete_status_by_id', delete_status_by_id, name='delete_status_by_id')
+    path('delete_status_by_id', delete_status_by_id, name='delete_status_by_id'),
+    path('college_details/', views.get_college_details, name='get_college_details'),
+    path('college_details/create/', views.create_college_detail, name='create_college_detail'),
+    path('college_details/<int:pk>/update/', views.update_college_detail, name='update_college_detail'),
+    path('college_details/<int:pk>/delete/', views.delete_college_detail, name='delete_college_detail'),
 ]
