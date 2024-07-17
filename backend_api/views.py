@@ -287,23 +287,29 @@ class ConsultantUpdateAPIView(APIView):
 
 @api_view(['POST'])
 def log_first_time_user(request):
-    # Check if user already exists
     user_id = request.data.get('user_id')
+    
+    # Check if user already exists
     if user_id and User.objects.filter(user_id=user_id).exists():
         user = User.objects.get(user_id=user_id)
-
-        # Check if user has a related PartTimer entry with all questions answered as true
-        part_timer_entry = PartTimer.objects.filter(user=user).first()
-        if part_timer_entry and part_timer_entry.answered_questions:
-            return Response({'message': 'User already exists and answered all questions', 'all_questions_answered': True}, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': 'User already exists but has not answered all questions', 'all_questions_answered': False}, status=status.HTTP_200_OK)
+        empty_fields = [field.name for field in user._meta.fields if not getattr(user, field.name, None)]
+        
+        return Response({
+            'empty_fields': empty_fields
+        }, status=status.HTTP_200_OK)
 
     # If user does not exist, create a new user
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        user = serializer.save()
+        empty_fields = [field.name for field in user._meta.fields if not getattr(user, field.name, None)]
+        
+        if empty_fields:
+            return Response({
+                'empty_fields': empty_fields
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
