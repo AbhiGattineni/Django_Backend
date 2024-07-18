@@ -290,29 +290,53 @@ def log_first_time_user(request):
     user_id = request.data.get('user_id')
     
     # Check if user already exists
-    if user_id and User.objects.filter(user_id=user_id).exists():
-        user = User.objects.get(user_id=user_id)
-        empty_fields = [field.name for field in user._meta.fields if not getattr(user, field.name, None)]
-        
-        return Response({
-            'empty_fields': empty_fields
-        }, status=status.HTTP_200_OK)
-
-    # If user does not exist, create a new user
+    if user_id:
+        try:
+            user = User.objects.get(user_id=user_id)
+            # Update the user with the given data
+            serializer = UserSerializer(user, data=request.data, partial=True)
+            if serializer.is_valid():
+                user = serializer.save()
+                empty_fields = [field.name for field in user._meta.fields if not getattr(user, field.name, None)]
+                
+                if not empty_fields:
+                    # Filter roles based on user_id
+                    assigned_roles = Role.objects.filter(user_id=user_id)
+                    assigned_roles_serializer = RoleSerializer(assigned_roles, many=True)
+                    roles = [role['role_name'] for role in assigned_roles_serializer.data]
+                    
+                    return Response({
+                        'roles': roles
+                    }, status=status.HTTP_200_OK)
+                
+                return Response({
+                    'empty_fields': empty_fields
+                }, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            pass  # If user does not exist, we'll create a new one
+    
+    # Create a new user if it doesn't exist
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
         empty_fields = [field.name for field in user._meta.fields if not getattr(user, field.name, None)]
         
-        if empty_fields:
+        if not empty_fields:
+            # Filter roles based on user_id
+            assigned_roles = Role.objects.filter(user_id=user_id)
+            assigned_roles_serializer = RoleSerializer(assigned_roles, many=True)
+            roles = [role['role_name'] for role in assigned_roles_serializer.data]
+            
             return Response({
-                'empty_fields': empty_fields
+                'roles': roles
             }, status=status.HTTP_201_CREATED)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response({
+            'empty_fields': empty_fields
+        }, status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 #view to show all the user, roles, and assigned roles data.
 @api_view(['GET'])
