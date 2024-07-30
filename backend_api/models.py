@@ -177,8 +177,8 @@ class Consultant(models.Model):
 
 class User(models.Model):
     user_id = models.CharField(max_length=100, primary_key=True)
-    full_name = models.CharField(max_length=100)
-    first_name = models.CharField(max_length=100)
+    full_name = models.CharField(max_length=100, blank=True, null=True)
+    first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     phone_country_code = models.CharField(max_length=4, blank=True, null=True)
     phone_number = models.CharField(max_length=10, blank=True, null=True)

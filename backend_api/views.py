@@ -293,8 +293,9 @@ def log_first_time_user(request):
     if user_id:
         try:
             user = User.objects.get(user_id=user_id)
-            # Update the user with the given data
-            serializer = UserSerializer(user, data=request.data, partial=True)
+            # Update only the empty or null fields
+            update_data = {field: value for field, value in request.data.items() if not getattr(user, field, None)}
+            serializer = UserSerializer(user, data=update_data, partial=True)
             if serializer.is_valid():
                 user = serializer.save()
                 empty_fields = [field.name for field in user._meta.fields if not getattr(user, field.name, None)]
@@ -306,6 +307,7 @@ def log_first_time_user(request):
                     roles = [role['role_name'] for role in assigned_roles_serializer.data]
                     
                     return Response({
+                        'empty_fields': empty_fields,
                         'roles': roles
                     }, status=status.HTTP_200_OK)
                 
@@ -329,6 +331,7 @@ def log_first_time_user(request):
             roles = [role['role_name'] for role in assigned_roles_serializer.data]
             
             return Response({
+                'empty_fields': empty_fields,
                 'roles': roles
             }, status=status.HTTP_201_CREATED)
         
