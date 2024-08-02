@@ -22,30 +22,30 @@ This Github link [https://github.com/AbhiGattineni/Django_Backend](https://githu
 
 **Click on the Code Button**
 
-![alt text](image-16.png)
+![alt text](./READMEimages/image-16.png)
 
 it wil open an a window
 
-![alt text](image-17.png)
+![alt text](./READMEimages/image-17.png)
 
 **Copy the link From the Window**
 
 **Go to the folder which was created(Ex:AnddhenGroup)**
 
-![alt text](image-5.png)
+![alt text](./READMEimages/image-5.png)
 
 **Now open Command prompt using cmd command and press Enter**
 
 ### `cmd`
 
-![alt text](image-6.png)
+![alt text](./READMEimages/image-6.png)
 
 
 **Enter command "git clone <copied link from git hub>" and press enter**
 
 ### `git clone <link>`
 
-![alt text](image-19.png)
+![alt text](./READMEimages/image-19.png)
 
 wait till the command to exacute
 
@@ -53,13 +53,13 @@ wait till the command to exacute
 
 ### `cd Django_Backend`
 
-![alt text](image-18.png)
+![alt text](./READMEimages/image-18.png)
 
 **Enter command "code ." and press enter**
 
 ### `cd Django_Backend`
 
-![alt text](image-20.png)
+![alt text](./READMEimages/image-20.png)
 
 this command will take you to vs code
 
@@ -71,7 +71,7 @@ You can open vs code directly and open the folder ""Anddhen-group" which is pres
 
 ### `.env`
 
-![alt text](image-12.png)
+![alt text](./READMEimages/image-12.png)
 
 this file is used to Maintain the credentials
 
@@ -83,7 +83,7 @@ after completing of the above steps
 
 **Open a New temrminal in vscode using this steps**
 
-![alt text](image-11.png)
+![alt text](./READMEimages/image-11.png)
 
 **OR**
 
@@ -91,13 +91,13 @@ after completing of the above steps
 
 **open a Git bash terminl**
 
-![alt text](image-13.png)
+![alt text](./READMEimages/image-13.png)
 
 **Enter the command "pip install -r requirements.txt"**
 
 ### `pip install -r requirements.txt`
 
-![alt text](image-21.png)
+![alt text](./READMEimages/image-21.png)
 
 this command is used to install all packages required
 
