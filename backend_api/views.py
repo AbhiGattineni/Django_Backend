@@ -13,6 +13,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import AcsParttimerStatus
 from .models import StatusUpdates
+from .models import CollegeDetail
+from .serializers import CollegeDetailSerializer
 from rest_framework.parsers import JSONParser
 from datetime import datetime
 from django.utils.dateparse import parse_datetime
@@ -215,7 +217,7 @@ def get_college(request, pk):
     try:
         college = CollegesList.objects.get(pk=pk)
     except CollegesList.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "College not found."}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = CollegesListSerializer(college)
@@ -226,7 +228,7 @@ def update_college(request, pk):
     try:
         college = CollegesList.objects.get(pk=pk)
     except CollegesList.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "College not found."}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
         serializer = CollegesListSerializer(college, data=request.data)
@@ -240,11 +242,11 @@ def delete_college(request, pk):
     try:
         college = CollegesList.objects.get(pk=pk)
     except CollegesList.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "College not found."}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'DELETE':
         college.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "College successfully deleted."}, status=status.HTTP_204_NO_CONTENT)
 
 class ConsultantListAPIView(APIView):
     def get(self, request, format=None):
@@ -285,26 +287,59 @@ class ConsultantUpdateAPIView(APIView):
 
 @api_view(['POST'])
 def log_first_time_user(request):
-    # Check if user already exists
     user_id = request.data.get('user_id')
-    if user_id and User.objects.filter(user_id=user_id).exists():
-        user = User.objects.get(user_id=user_id)
-
-        # Check if user has a related PartTimer entry with all questions answered as true
-        part_timer_entry = PartTimer.objects.filter(user=user).first()
-        if part_timer_entry and part_timer_entry.answered_questions:
-            return Response({'message': 'User already exists and answered all questions', 'all_questions_answered': True}, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': 'User already exists but has not answered all questions', 'all_questions_answered': False}, status=status.HTTP_200_OK)
-
-    # If user does not exist, create a new user
+    
+    # Check if user already exists
+    if user_id:
+        try:
+            user = User.objects.get(user_id=user_id)
+            # Update only the empty or null fields
+            update_data = {field: value for field, value in request.data.items() if not getattr(user, field, None)}
+            serializer = UserSerializer(user, data=update_data, partial=True)
+            if serializer.is_valid():
+                user = serializer.save()
+                empty_fields = [field.name for field in user._meta.fields if not getattr(user, field.name, None)]
+                
+                if not empty_fields:
+                    # Filter roles based on user_id
+                    assigned_roles = Role.objects.filter(user_id=user_id)
+                    assigned_roles_serializer = RoleSerializer(assigned_roles, many=True)
+                    roles = [role['role_name'] for role in assigned_roles_serializer.data]
+                    
+                    return Response({
+                        'empty_fields': empty_fields,
+                        'roles': roles
+                    }, status=status.HTTP_200_OK)
+                
+                return Response({
+                    'empty_fields': empty_fields
+                }, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            pass  # If user does not exist, we'll create a new one
+    
+    # Create a new user if it doesn't exist
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        user = serializer.save()
+        empty_fields = [field.name for field in user._meta.fields if not getattr(user, field.name, None)]
+        
+        if not empty_fields:
+            # Filter roles based on user_id
+            assigned_roles = Role.objects.filter(user_id=user_id)
+            assigned_roles_serializer = RoleSerializer(assigned_roles, many=True)
+            roles = [role['role_name'] for role in assigned_roles_serializer.data]
+            
+            return Response({
+                'empty_fields': empty_fields,
+                'roles': roles
+            }, status=status.HTTP_201_CREATED)
+        
+        return Response({
+            'empty_fields': empty_fields
+        }, status=status.HTTP_201_CREATED)
+    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 #view to show all the user, roles, and assigned roles data.
 @api_view(['GET'])
@@ -827,3 +862,84 @@ def delete_status_by_id(request):
         return JsonResponse({"error": f"{field} required field is missing"}, status=400)
     except Exception as e:
         return JsonResponse({"error": "An error occurred"}, status=500)
+    
+@api_view(['GET'])
+def get_college_details(request):
+    if request.method == 'GET':
+        college_details = CollegeDetail.objects.all()
+        serializer = CollegeDetailSerializer(college_details, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def college_detail_view(request):
+    filters = {}
+
+    try:
+        college_id = request.GET.get('college')
+        if college_id:
+            try:
+                filters['college__id'] = int(college_id)
+            except ValueError:
+                return JsonResponse({'error': 'Invalid college ID'}, status=400)
+        
+        college_name = request.GET.get('college_name')
+        if college_name:
+            filters['college_name__icontains'] = college_name
+        
+        label = request.GET.get('label')
+        if label:
+            filters['label__icontains'] = label
+        
+        link = request.GET.get('link')
+        if link:
+            filters['link__icontains'] = link
+
+        college_details = CollegeDetail.objects.filter(**filters)
+        response_data = [
+            {
+                'college_id': detail.college.id,
+                'college_name': detail.college_name,
+                'label': detail.label,
+                'link': detail.link,
+            }
+            for detail in college_details
+        ]
+
+        return JsonResponse(response_data, safe=False)
+    
+    except ValidationError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': 'College not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@api_view(['POST'])
+def create_college_detail(request):
+    if request.method == 'POST':
+        serializer = CollegeDetailSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def update_college_detail(request, pk):
+    try:
+        college_detail = get_object_or_404(CollegeDetail, pk=pk)
+        serializer = CollegeDetailSerializer(college_detail, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except CollegeDetail.DoesNotExist:
+        return Response({'error': 'CollegeDetail not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+def delete_college_detail(request, pk):
+    try:
+        college_detail = get_object_or_404(CollegeDetail, pk=pk)
+        college_detail.delete()
+        return Response({'message': 'CollegeDetail successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
+    except CollegeDetail.DoesNotExist:
+        return Response({'error': 'CollegeDetail not found'}, status=status.HTTP_404_NOT_FOUND)

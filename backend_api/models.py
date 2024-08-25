@@ -4,6 +4,9 @@ from datetime import date
 from django.core.validators import MaxValueValidator
 from django.utils import timezone
 
+def current_date():
+    return timezone.now().date()
+
 class Todo(models.Model):
     task = models.CharField(max_length = 180)
     timestamp = models.DateTimeField(auto_now_add = True, auto_now = False, blank = True)
@@ -96,7 +99,17 @@ class CollegesList(models.Model):
     def __str__(self):
         return self.college_name
 
+class CollegeDetail(models.Model):
+    college = models.ForeignKey(CollegesList, on_delete=models.CASCADE)
+    college_name = models.CharField(max_length=255, null=False, blank=False)
+    label = models.CharField(max_length=255, null=False, blank=False)
+    link = models.URLField()
 
+    class Meta:
+        db_table = 'social_links'
+
+    def __str__(self):
+        return self.college_name
 
 class AccessRoles(models.Model):
     admin_access_role = models.CharField(max_length=255)
@@ -164,9 +177,9 @@ class Consultant(models.Model):
 
 class User(models.Model):
     user_id = models.CharField(max_length=100, primary_key=True)
-    full_name = models.CharField(max_length=100)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    full_name = models.CharField(max_length=100, blank=True, null=True)
+    first_name = models.CharField(max_length=100, blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
     phone_country_code = models.CharField(max_length=4, blank=True, null=True)
     phone_number = models.CharField(max_length=10, blank=True, null=True)
     email_id = models.EmailField()
@@ -216,7 +229,7 @@ class AcsParttimerStatus(models.Model):
 class StatusUpdates(models.Model):
     user_id = models.CharField(max_length=100, blank=False)
     user_name = models.CharField(max_length=100, blank=False)
-    date = models.DateField(blank=False, validators=[MaxValueValidator(timezone.now().date)])
+    date = models.DateField(blank=False, validators=[MaxValueValidator(current_date)])
     status = models.CharField(max_length=100, blank=False)
 
     class Meta:
