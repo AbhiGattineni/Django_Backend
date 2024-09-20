@@ -682,14 +682,17 @@ def application_detail_by_id_and_date(request, id, date):
     except ValueError:
         return JsonResponse({"error": "Invalid date format. Please use 'YYYY-MM-DD'."}, status=400)
     
+from django.db.models import Min
 # Status Updates
 @api_view(['GET'])
 @csrf_exempt
-def get_status(request):
+def get_status_ids(request):
     if request.method == 'GET':
-        status = StatusUpdates.objects.all()
-        status_data = list(status.values())
-        return JsonResponse(status_data, safe=False)
+        # Get unique user_id and the first occurrence of user_name
+        unique_users = StatusUpdates.objects.values('user_id').annotate(user_name=Min('user_name'))
+        
+        # Return as an array of dictionaries
+        return JsonResponse(list(unique_users), safe=False)
     else:
         return JsonResponse({'message': 'Invalid request method'}, status=405)
     
