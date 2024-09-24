@@ -92,6 +92,7 @@ class CollegesList(models.Model):
     UG_courses_link = models.URLField(blank=True, null=True)
     graduation_courses = models.TextField(blank=True, null=True)
     graduation_courses_link = models.URLField(blank=True, null=True)
+    state = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         db_table = 'collegelist'
