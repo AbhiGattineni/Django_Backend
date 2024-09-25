@@ -25,8 +25,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 
-from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role, PartTimer, Package
-from .serializers import StatusUpdatesSerializer, TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer, PartTimerSerializer, PackageSerializer
+from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role, PartTimer, Package, ShopingProduct
+from .serializers import StatusUpdatesSerializer, TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer, PartTimerSerializer, PackageSerializer, ShopingProductSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -946,3 +946,29 @@ def delete_college_detail(request, pk):
         return Response({'message': 'CollegeDetail successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
     except CollegeDetail.DoesNotExist:
         return Response({'error': 'CollegeDetail not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+# Fetch all products
+@api_view(['GET'])
+def get_all_products(request):
+    products = ShopingProduct.objects.all()
+    serializer = ShopingProductSerializer(products, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Fetch a single product by its id
+@api_view(['GET'])
+def get_single_product(request, pk):
+    try:
+        product = ShopingProduct.objects.get(pk=pk)
+        serializer = ShopingProductSerializer(product)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except ShopingProduct.DoesNotExist:
+        return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+# Add a new product
+@api_view(['POST'])
+def add_product(request):
+    serializer = ShopingProductSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

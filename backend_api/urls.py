@@ -64,4 +64,7 @@ urlpatterns = [
     path('college_details/create/', views.create_college_detail, name='create_college_detail'),
     path('college_details/<int:pk>/update/', views.update_college_detail, name='update_college_detail'),
     path('college_details/<int:pk>/delete/', views.delete_college_detail, name='delete_college_detail'),
+    path('products/', views.get_all_products, name='get_all_products'),
+    path('products/<int:pk>/', views.get_single_product, name='get_single_product'),
+    path('products/add/', views.add_product, name='add_product'),
 ]

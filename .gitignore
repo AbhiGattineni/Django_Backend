@@ -33,7 +33,6 @@ instance/
 # Django specific
 *.sqlite3
 db.sqlite3
-migrations/
 local_settings.py
 media/
 static/
