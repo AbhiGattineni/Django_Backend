@@ -6,6 +6,7 @@ from .views import (
     TodoListApiView,
     TodoDetailApiView,
     create_status,
+    get_status_ids,
     delete_status_by_id,
     get_status,
     # get_status_by_id,
@@ -55,6 +56,7 @@ urlpatterns = [
     path('acs_parttimer_status/<str:id>/<str:date>', application_detail_by_id_and_date),
     path('create_status_update', create_status, name='create_status_update'),
     path('get_status_update', get_status, name='get_status_update'),
+    path('get_status_ids', get_status_ids, name='get_status_ids'),
     path('get_status_by_id/<str:user_id>', get_status_by_id, name='get_status_by_id'),
     path('update_status_by_id', update_status_by_id, name='update_status_by_id'),
     path('delete_status_by_id', delete_status_by_id, name='delete_status_by_id'),
@@ -62,4 +64,7 @@ urlpatterns = [
     path('college_details/create/', views.create_college_detail, name='create_college_detail'),
     path('college_details/<int:pk>/update/', views.update_college_detail, name='update_college_detail'),
     path('college_details/<int:pk>/delete/', views.delete_college_detail, name='delete_college_detail'),
+    path('products/', views.get_all_products, name='get_all_products'),
+    path('products/<int:pk>/', views.get_single_product, name='get_single_product'),
+    path('products/add/', views.add_product, name='add_product'),
 ]

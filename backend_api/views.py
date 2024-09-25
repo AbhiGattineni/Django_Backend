@@ -25,8 +25,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 
-from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role, PartTimer, Package
-from .serializers import StatusUpdatesSerializer, TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer, PartTimerSerializer, PackageSerializer
+from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role, PartTimer, Package, ShopingProduct
+from .serializers import StatusUpdatesSerializer, TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer, PartTimerSerializer, PackageSerializer, ShopingProductSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -682,14 +682,17 @@ def application_detail_by_id_and_date(request, id, date):
     except ValueError:
         return JsonResponse({"error": "Invalid date format. Please use 'YYYY-MM-DD'."}, status=400)
     
+from django.db.models import Min
 # Status Updates
 @api_view(['GET'])
 @csrf_exempt
-def get_status(request):
+def get_status_ids(request):
     if request.method == 'GET':
-        status = StatusUpdates.objects.all()
-        status_data = list(status.values())
-        return JsonResponse(status_data, safe=False)
+        # Get unique user_id and the first occurrence of user_name
+        unique_users = StatusUpdates.objects.values('user_id').annotate(user_name=Min('user_name'))
+        
+        # Return as an array of dictionaries
+        return JsonResponse(list(unique_users), safe=False)
     else:
         return JsonResponse({'message': 'Invalid request method'}, status=405)
     
@@ -943,3 +946,29 @@ def delete_college_detail(request, pk):
         return Response({'message': 'CollegeDetail successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
     except CollegeDetail.DoesNotExist:
         return Response({'error': 'CollegeDetail not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+# Fetch all products
+@api_view(['GET'])
+def get_all_products(request):
+    products = ShopingProduct.objects.all()
+    serializer = ShopingProductSerializer(products, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Fetch a single product by its id
+@api_view(['GET'])
+def get_single_product(request, pk):
+    try:
+        product = ShopingProduct.objects.get(pk=pk)
+        serializer = ShopingProductSerializer(product)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except ShopingProduct.DoesNotExist:
+        return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+# Add a new product
+@api_view(['POST'])
+def add_product(request):
+    serializer = ShopingProductSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

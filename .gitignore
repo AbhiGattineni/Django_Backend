@@ -12,7 +12,6 @@ __pycache__/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
 *.pyo
 *.pyd
 
@@ -34,7 +33,6 @@ instance/
 # Django specific
 *.sqlite3
 db.sqlite3
-migrations/
 local_settings.py
 media/
 static/

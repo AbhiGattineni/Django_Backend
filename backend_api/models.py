@@ -92,6 +92,7 @@ class CollegesList(models.Model):
     UG_courses_link = models.URLField(blank=True, null=True)
     graduation_courses = models.TextField(blank=True, null=True)
     graduation_courses_link = models.URLField(blank=True, null=True)
+    state = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         db_table = 'collegelist'
@@ -237,3 +238,16 @@ class StatusUpdates(models.Model):
 
     def __str__(self):
         return f"{self.user_name}'s status added on {self.date}"
+    
+class ShopingProduct(models.Model):
+    name = models.CharField(max_length=100, blank=False)
+    image_url = models.URLField(max_length=200, blank=False)
+    link = models.URLField(max_length=200, blank=False)
+    age_group = models.CharField(max_length=20, blank=False)
+    description = models.TextField(blank=True)
+
+    class Meta:
+        db_table = 'ShopingProduct'
+
+    def __str__(self):
+        return f"{self.name}"

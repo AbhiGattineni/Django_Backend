@@ -10,7 +10,7 @@ from .models import Role
 from .models import Package
 from .models import AcsParttimerStatus
 from .models import StatusUpdates
-from .models import CollegeDetail
+from .models import CollegeDetail, ShopingProduct
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -80,4 +80,9 @@ class StatusUpdatesSerializer(serializers.ModelSerializer):
 class CollegeDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollegeDetail
+        fields = '__all__'
+
+class ShopingProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShopingProduct
         fields = '__all__'
