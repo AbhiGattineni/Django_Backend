@@ -239,9 +239,11 @@ class StatusUpdates(models.Model):
     def __str__(self):
         return f"{self.user_name}'s status added on {self.date}"
     
+from django.db import models
+
 class ShopingProduct(models.Model):
     name = models.CharField(max_length=100, blank=False)
-    image_url = models.URLField(max_length=200, blank=False)
+    image = models.ImageField(upload_to='products/', blank=False, null=True)  # Use ImageField here
     link = models.URLField(max_length=200, blank=False)
     age_group = models.CharField(max_length=20, blank=False)
     description = models.TextField(blank=True)
