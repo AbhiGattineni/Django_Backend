@@ -123,11 +123,37 @@ class AccessRoles(models.Model):
         db_table = 'access_roles'
 
 
+class Employer(models.Model):
+    name = models.CharField(max_length=255)
+    address = models.TextField()
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        db_table = 'employer_details'
+
+class Recruiter(models.Model):
+    name = models.CharField(max_length=255)
+    phone = models.CharField(max_length=15, unique=True)
+    employer = models.CharField(max_length=255)  # Employer name as a string field
+    email = models.EmailField()
+
+    def __str__(self):
+        return f'{self.name} ({self.employer})'
+    
+    class Meta:
+        db_table = 'recrutier_details'
+
 class Consultant(models.Model):
+    # Foreign Keys
+    employer = models.ForeignKey(Employer, on_delete=models.CASCADE, null=True, blank=True)
+    recruiter = models.ForeignKey(Recruiter, on_delete=models.SET_NULL, null=True, blank=True)
+
     # Basic Information
     full_name = models.CharField(max_length=100)
     full_name_verified = models.BooleanField(default=False)
-    phone_number = models.CharField(max_length=10)  # Assuming only digits, no formatting
+    phone_number = models.CharField(max_length=10, unique=True)
     email_id = models.EmailField()
     dob = models.DateField()  # Date of Birth
     visa_status = models.CharField(max_length=20, choices=[
@@ -175,6 +201,19 @@ class Consultant(models.Model):
 
     class Meta:
         db_table = 'consultant_details'
+
+class StatusConsultant(models.Model):
+    consultant_id = models.ForeignKey(Consultant, on_delete=models.CASCADE, default=None)
+    recruiter_id = models.ForeignKey(Recruiter, on_delete=models.CASCADE, default=None)
+    employer_id = models.ForeignKey(Employer, on_delete=models.CASCADE, default=None)
+    date = models.DateField(default=timezone.now)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f'Note on {self.date} is {self.description}'
+    
+    class Meta:
+        db_table = 'status_consultant'
 
 class User(models.Model):
     user_id = models.CharField(max_length=100, primary_key=True)
