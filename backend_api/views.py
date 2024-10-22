@@ -28,6 +28,11 @@ from rest_framework import generics
 from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role, PartTimer, Package, ShopingProduct
 from .serializers import StatusUpdatesSerializer, TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer, PartTimerSerializer, PackageSerializer, ShopingProductSerializer
 
+
+from rest_framework.generics import get_object_or_404
+from .models import Employer, Recruiter, StatusConsultant, Consultant
+from .serializers import EmployerSerializer, RecruiterSerializer, StatusConsultantSerializer
+
 logger = logging.getLogger(__name__)
 
 
@@ -993,3 +998,109 @@ def update_product(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except ShopingProduct.DoesNotExist:
         return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+# Employer Views
+class EmployerListCreateAPIView(APIView):
+    def get(self, request):
+        employers = Employer.objects.all()
+        serializer = EmployerSerializer(employers, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = EmployerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EmployerRetrieveUpdateDeleteAPIView(APIView):
+    def get(self, request, pk):
+        employer = get_object_or_404(Employer, pk=pk)
+        serializer = EmployerSerializer(employer)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        employer = get_object_or_404(Employer, pk=pk)
+        serializer = EmployerSerializer(employer, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        employer = get_object_or_404(Employer, pk=pk)
+        employer.delete()
+        
+        # Return success message
+        return Response({"message": "Employer deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+
+# Recruiter Views
+class RecruiterListCreateAPIView(APIView):
+    def get(self, request):
+        recruiters = Recruiter.objects.all()
+        serializer = RecruiterSerializer(recruiters, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = RecruiterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RecruiterRetrieveUpdateDeleteAPIView(APIView):
+    def get(self, request, pk):
+        recruiter = get_object_or_404(Recruiter, pk=pk)
+        serializer = RecruiterSerializer(recruiter)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        recruiter = get_object_or_404(Recruiter, pk=pk)
+        serializer = RecruiterSerializer(recruiter, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        recruiter = get_object_or_404(Recruiter, pk=pk)
+        recruiter.delete()
+        return Response({"message": "Recruiter deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+
+# StatusConsultant Views
+class StatusConsultantListCreateAPIView(APIView):
+    def get(self, request):
+        status_consultants = StatusConsultant.objects.all()
+        serializer = StatusConsultantSerializer(status_consultants, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = StatusConsultantSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StatusConsultantRetrieveUpdateDeleteAPIView(APIView):
+    def get(self, request, pk):
+        status_consultant = get_object_or_404(StatusConsultant, pk=pk)
+        serializer = StatusConsultantSerializer(status_consultant)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        status_consultant = get_object_or_404(StatusConsultant, pk=pk)
+        serializer = StatusConsultantSerializer(status_consultant, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        status_consultant = get_object_or_404(StatusConsultant, pk=pk)
+        status_consultant.delete()
+        return Response({"message": "Status deleted successfully."}, status=status.HTTP_204_NO_CONTENT)

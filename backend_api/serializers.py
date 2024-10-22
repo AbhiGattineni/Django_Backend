@@ -11,6 +11,7 @@ from .models import Package
 from .models import AcsParttimerStatus
 from .models import StatusUpdates
 from .models import CollegeDetail, ShopingProduct
+from .models import StatusConsultant, Employer, Recruiter, Consultant
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,6 +35,27 @@ class CollegesListSerializer(serializers.ModelSerializer):
 class ConsultantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consultant
+        fields = '__all__'
+
+class EmployerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employer
+        fields = '__all__'
+
+
+class RecruiterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recruiter
+        fields = '__all__'
+
+
+class StatusConsultantSerializer(serializers.ModelSerializer):
+    consultant_id = serializers.PrimaryKeyRelatedField(queryset=Consultant.objects.all())
+    recruiter_id = serializers.PrimaryKeyRelatedField(queryset=Recruiter.objects.all())  # Accept recruiter ID
+    employer_id = serializers.PrimaryKeyRelatedField(queryset=Employer.objects.all())  # Accept employer ID
+
+    class Meta:
+        model = StatusConsultant
         fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
