@@ -19,7 +19,11 @@ from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, De
 from backend_api.views import acsParttimerStatus_detail, acsParttimerStatus_update, acsParttimerStatus_create, acsParttimerStatus_delete, application_list, application_detail_by_id_and_date
 from .views import create_college, get_college, update_college, delete_college, get_all_colleges,user_data_and_roles_view, assign_role, create_part_timer, get_status_by_id
 from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView, DeleteUserAccessRoleView, PackageListCreateView, PackageDetailView
-
+from .views import (
+    EmployerListCreateAPIView, EmployerRetrieveUpdateDeleteAPIView,
+    RecruiterListCreateAPIView, RecruiterRetrieveUpdateDeleteAPIView,
+    StatusConsultantListCreateAPIView, StatusConsultantRetrieveUpdateDeleteAPIView
+)
 
 urlpatterns = [
     path('api', TodoListApiView.as_view()),
@@ -68,5 +72,15 @@ urlpatterns = [
     path('products/<int:pk>/', views.get_single_product, name='get_single_product'),
     path('products/add/', views.add_product, name='add_product'),
     path('products/delete/<int:pk>/',views.delete_product,name="delete_product"),
-    path('products/update/<int:pk>/',views.update_product,name="update_product")
+    path('products/update/<int:pk>/',views.update_product,name="update_product"),
+    path('employers/', EmployerListCreateAPIView.as_view(), name='employer-list-create'),
+    path('employers/<int:pk>/', EmployerRetrieveUpdateDeleteAPIView.as_view(), name='employer-detail'),
+
+    # Recruiter URLs
+    path('recruiters/', RecruiterListCreateAPIView.as_view(), name='recruiter-list-create'),
+    path('recruiters/<int:pk>/', RecruiterRetrieveUpdateDeleteAPIView.as_view(), name='recruiter-detail'),
+
+    # StatusConsultant URLs
+    path('status-consultants/', StatusConsultantListCreateAPIView.as_view(), name='status-consultant-list-create'),
+    path('status-consultants/<int:pk>/', StatusConsultantRetrieveUpdateDeleteAPIView.as_view(), name='status-consultant-detail'),
 ]

@@ -147,8 +147,8 @@ class Recruiter(models.Model):
 
 class Consultant(models.Model):
     # Foreign Keys
-    employer = models.ForeignKey(Employer, on_delete=models.CASCADE, null=True, blank=True)
-    recruiter = models.ForeignKey(Recruiter, on_delete=models.SET_NULL, null=True, blank=True)
+    employer_id = models.ForeignKey(Employer, on_delete=models.CASCADE, related_name='consultant_employers', null=True)
+    recruiter_id = models.ForeignKey(Recruiter, on_delete=models.CASCADE, related_name='consultant_recruiters', null=True)
 
     # Basic Information
     full_name = models.CharField(max_length=100)
