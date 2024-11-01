@@ -195,8 +195,6 @@ class DeleteRoleView(APIView):
 
 class ConsultantCreateAPIView(APIView):
     def post(self, request, format=None):
-        print(request.data)
-        print(request.data['status_consultant'])
         serializer = ConsultantSerializer(data=request.data)
         if serializer.is_valid():
             consultant = serializer.save()
