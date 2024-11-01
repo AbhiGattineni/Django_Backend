@@ -32,10 +32,33 @@ class CollegesListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollegesList
         fields = '__all__'
+
+class StatusConsultantSerializer(serializers.ModelSerializer):
+    consultant_id = serializers.PrimaryKeyRelatedField(queryset=Consultant.objects.all(), required=False)
+    recruiter_id = serializers.PrimaryKeyRelatedField(queryset=Recruiter.objects.all())
+    employer_id = serializers.PrimaryKeyRelatedField(queryset=Employer.objects.all())
+
+    class Meta:
+        model = StatusConsultant
+        fields = '__all__'
+
 class ConsultantSerializer(serializers.ModelSerializer):
+    status_consultant = StatusConsultantSerializer(required=False)
+
     class Meta:
         model = Consultant
         fields = '__all__'
+
+    def create(self, validated_data):
+        status_data = validated_data.pop('status_consultant', None)
+        consultant = Consultant.objects.create(**validated_data)
+
+        # print(status_data)
+        # Automatically associate the new consultant with StatusConsultant if status_data exists
+        if status_data:
+            StatusConsultant.objects.create(consultant_id=consultant, **status_data)
+
+        return consultant
 
 class EmployerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,16 +69,6 @@ class EmployerSerializer(serializers.ModelSerializer):
 class RecruiterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recruiter
-        fields = '__all__'
-
-
-class StatusConsultantSerializer(serializers.ModelSerializer):
-    consultant_id = serializers.PrimaryKeyRelatedField(queryset=Consultant.objects.all())
-    recruiter_id = serializers.PrimaryKeyRelatedField(queryset=Recruiter.objects.all())  # Accept recruiter ID
-    employer_id = serializers.PrimaryKeyRelatedField(queryset=Employer.objects.all())  # Accept employer ID
-
-    class Meta:
-        model = StatusConsultant
         fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
