@@ -11,8 +11,6 @@ from .models import Package
 from .models import AcsParttimerStatus
 from .models import StatusUpdates
 from .models import CollegeDetail, ShopingProduct
-from .models import StatusConsultant, Employer, Recruiter, Consultant
-import json
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,47 +48,6 @@ class ConsultantSerializer(serializers.ModelSerializer):
         model = Consultant
         fields = '__all__'
 
-    def to_internal_value(self, data):
-        """Handle nested writable serializer data for status_consultant."""
-        status_data = data.get('status_consultant', None)
-        validated_data = super().to_internal_value(data)
-        if status_data:
-            validated_data['status_consultant'] = status_data
-        return validated_data
-
-    def create(self, validated_data):
-        status_data = validated_data.pop('status_consultant', None)
-        consultant = Consultant.objects.create(**validated_data)
-
-        # Ensure status_data is a dictionary
-        if isinstance(status_data, str):
-            status_data = json.loads(status_data)
-
-        if status_data:
-            # Retrieve instances for foreign key fields
-            recruiter = Recruiter.objects.get(id=status_data['recruiter_id'])
-            employer = Employer.objects.get(id=status_data['employer_id'])
-
-            # Create StatusConsultant with related instances
-            StatusConsultant.objects.create(
-                consultant_id=consultant,
-                recruiter_id=recruiter,
-                employer_id=employer,
-                date=status_data.get('date'),
-                description=status_data.get('description')
-            )
-
-        return consultant
-
-class EmployerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Employer
-        fields = '__all__'
-
-class RecruiterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Recruiter
-        fields = '__all__'
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
