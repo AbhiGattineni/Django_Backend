@@ -11,6 +11,7 @@ from .models import Package
 from .models import AcsParttimerStatus
 from .models import StatusUpdates
 from .models import CollegeDetail, ShopingProduct
+from .models import Employer, Recruiter, StatusConsultant
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
