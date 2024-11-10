@@ -197,8 +197,11 @@ class ConsultantCreateAPIView(APIView):
     def post(self, request, format=None):
         serializer = ConsultantSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            consultant = serializer.save()
+            return Response({
+                "consultant": ConsultantSerializer(consultant).data,
+                "status_consultant": StatusConsultantSerializer(consultant.statusconsultant_set.first()).data if consultant.statusconsultant_set.exists() else None
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(['GET'])
