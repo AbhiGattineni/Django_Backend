@@ -17,7 +17,7 @@ from .views import (
 from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, DeleteRoleView
 
 from backend_api.views import acsParttimerStatus_detail, acsParttimerStatus_update, acsParttimerStatus_create, acsParttimerStatus_delete, application_list, application_detail_by_id_and_date
-from .views import create_college, get_college, update_college, delete_college, get_all_colleges,user_data_and_roles_view, assign_role, create_part_timer, get_status_by_id
+from .views import create_college, get_college, update_college, delete_college, get_all_colleges,user_data_and_roles_view, assign_role, create_part_timer, get_status_by_id, health_check
 from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView, DeleteUserAccessRoleView, PackageListCreateView, PackageDetailView
 from .views import (
     EmployerListCreateAPIView, EmployerRetrieveUpdateDeleteAPIView,
@@ -83,4 +83,5 @@ urlpatterns = [
     # StatusConsultant URLs
     path('status-consultants/', StatusConsultantListCreateAPIView.as_view(), name='status-consultant-list-create'),
     path('status-consultants/<int:pk>/', StatusConsultantRetrieveUpdateDeleteAPIView.as_view(), name='status-consultant-detail'),
+    path('health/', health_check, name='health_check'),
 ]

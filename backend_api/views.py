@@ -1120,3 +1120,7 @@ class StatusConsultantRetrieveUpdateDeleteAPIView(APIView):
         status_consultant = get_object_or_404(StatusConsultant, pk=pk)
         status_consultant.delete()
         return Response({"message": "Status deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+
+def health_check(request):
+    return JsonResponse({'status': 'ok'})
