@@ -352,6 +352,7 @@ def log_first_time_user(request):
 #view to show all the user, roles, and assigned roles data.
 @api_view(['GET'])
 def user_data_and_roles_view(request):
+    print(request)
     # Fetching all users
     users = User.objects.all()
     users_serializer = UserSerializer(users, many=True)
