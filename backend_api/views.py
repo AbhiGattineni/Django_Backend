@@ -352,7 +352,19 @@ def log_first_time_user(request):
 #view to show all the user, roles, and assigned roles data.
 @api_view(['GET'])
 def user_data_and_roles_view(request):
-    print(request)
+    # Construct a dictionary with request details
+    request_data = {
+        'method': request.method,
+        'path': request.get_full_path(),
+        'headers': dict(request.headers),
+        'body': request.body.decode('utf-8', errors='replace') if request.body else ''
+    }
+
+    # Serialize the dictionary to a JSON-formatted string
+    request_json = json.dumps(request_data, indent=4)
+
+    # Print the JSON string
+    print(request_json)
     # Fetching all users
     users = User.objects.all()
     users_serializer = UserSerializer(users, many=True)
