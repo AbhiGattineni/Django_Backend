@@ -43,7 +43,8 @@ jobs:
                 ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
                     cd Django_Backend/
                     ls -la
-                    git pull origin dev
+                    git branch
+                    git pull origin main
 
                 EOF
              
