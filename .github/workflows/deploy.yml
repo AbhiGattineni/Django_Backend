@@ -44,17 +44,17 @@ jobs:
               with:
                 ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-            # - name: Create env file
-            #   run: |
-            #     cat <<EOT > .env
-            #         SECRET_KEY=$SECRET_KEY
-            #         MYSQL_DB=$MYSQL_DB
-            #         MYSQL_USER=$MYSQL_USER
-            #         MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
-            #         MYSQL_HOST=$MYSQL_HOST
-            #         DB_ENGINE=$DB_ENGINE
-            #         DB_PORT=$DB_PORT
-            #     EOT
+            - name: Create env file
+              run: |
+                cat <<EOT > .env
+                    SECRET_KEY=${{ secrets.SECRET_KEY }}
+                    MYSQL_DB=${{ secrets.MYSQL_DB }}
+                    MYSQL_USER=${{ secrets.MYSQL_USER }}
+                    MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+                    MYSQL_HOST=${{ secrets.MYSQL_HOST }}
+                    DB_ENGINE=${{ secrets.DB_ENGINE }}
+                    DB_PORT=${{ secrets.DB_PORT }}
+                EOT
 
             - name: Deploy Code to EC2
               run: |
