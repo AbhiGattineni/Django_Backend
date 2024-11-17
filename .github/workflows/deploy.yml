@@ -44,17 +44,17 @@ jobs:
               with:
                 ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-            - name: Create env file
-              run: |
-                cat <<EOT > .env
-                    SECRET_KEY=$SECRET_KEY
-                    MYSQL_DB=$MYSQL_DB
-                    MYSQL_USER=$MYSQL_USER
-                    MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
-                    MYSQL_HOST=$MYSQL_HOST
-                    DB_ENGINE=$DB_ENGINE
-                    DB_PORT=$DB_PORT
-                EOT
+            # - name: Create env file
+            #   run: |
+            #     cat <<EOT > .env
+            #         SECRET_KEY=$SECRET_KEY
+            #         MYSQL_DB=$MYSQL_DB
+            #         MYSQL_USER=$MYSQL_USER
+            #         MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+            #         MYSQL_HOST=$MYSQL_HOST
+            #         DB_ENGINE=$DB_ENGINE
+            #         DB_PORT=$DB_PORT
+            #     EOT
 
             - name: Deploy Code to EC2
               run: |
@@ -64,7 +64,8 @@ jobs:
                     ls -la
                     git branch
                     git pull origin main
-                
+
+                    echo $MYSQL_DB
                     RUNNING_CONTAINERS=$(docker ps -q)
                     if [ -z "$RUNNING_CONTAINERS" ]; then
                     echo "No running Docker containers. Skipping 'docker-compose down'."
