@@ -60,20 +60,23 @@ jobs:
                     echo "Stopping running containers..."
                     docker-compose down
                     fi
-                    export SECRET_KEY=$SECRET_KEY
-                    export MYSQL_DB=$MYSQL_DB
-                    export MYSQL_USER=$MYSQL_USER
-                    export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
-                    export MYSQL_HOST=$MYSQL_HOST
-                    export DB_ENGINE=$DB_ENGINE
-                    export DB_PORT=$DB_PORT
+                    cat <<EOT > .env
+                    SECRET_KEY=$SECRET_KEY
+                    MYSQL_DB=$MYSQL_DB
+                    MYSQL_USER=$MYSQL_USER
+                    MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+                    MYSQL_HOST=$MYSQL_HOST
+                    DB_ENGINE=$DB_ENGINE
+                    DB_PORT=$DB_PORT
+                    EOT
 
-                    echo $MYSQL_DB
+                    echo "Contents of .env file:"
+                    cat .env
                     echo "Building Docker containers..."
-                    docker-compose build
+                    docker-compose --env-file .env build
 
                     echo "Starting Docker containers..."
-                    docker-compose up
+                    docker-compose --env-file .env up
                     
                     # echo "Waiting for containers to start..."
                     # sleep 30
