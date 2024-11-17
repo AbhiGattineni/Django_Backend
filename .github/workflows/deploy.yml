@@ -10,6 +10,13 @@ env:
 
     EC2_USER:  ${{ secrets.EC2_USER }}                  # Replace with your EC2 username
     EC2_HOST: ${{ secrets.EC2_HOST }}
+    SECRET_KEY: ${{ secrets.SECRET_KEY }}
+    MYSQL_DB: ${{ secrets.MYSQL_DB }}
+    MYSQL_USER: ${{ secrets.MYSQL_USER }}
+    MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+    MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+    DB_ENGINE: ${{ secrets.DB_ENGINE }}
+    DB_PORT: ${{ secrets.DB_PORT }}
 
 jobs:
     build:
@@ -53,7 +60,13 @@ jobs:
                     echo "Stopping running containers..."
                     docker-compose down
                     fi
-
+                    export SECRET_KEY=$SECRET_KEY
+                    export MYSQL_DB=$MYSQL_DB
+                    export MYSQL_USER=$MYSQL_USER
+                    export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+                    export MYSQL_HOST=$MYSQL_HOST
+                    export DB_ENGINE=$DB_ENGINE
+                    export DB_PORT=$DB_PORT
                     echo "Building Docker containers..."
                     docker-compose build
 
@@ -62,7 +75,7 @@ jobs:
                     
                     echo "Waiting for containers to start..."
                     sleep 30
-                    
+
                     echo "Validating Docker container statuses..."
                     RUNNING_CONTAINERS=$(docker ps -q)
                     if [ -z "$RUNNING_CONTAINERS" ]; then
