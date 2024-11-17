@@ -22,10 +22,18 @@ jobs:
                     python -m pip install --upgrade pip
                     pip install -r requirements.txt 
                     pip install awscli
-                    
-            - name: Connect to AWS EC2
+
+            - name: Configure aws creds
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                role-to-assume: arn:aws:iam::805556599116:role/Devops-githubactions
+
+            - name: check aws creds
               run: |
-                    aws cli -v
+                echo $AWC_ACCESS_KEY
+                
+
+                    
             
                           
                 
