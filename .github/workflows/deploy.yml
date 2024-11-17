@@ -41,7 +41,10 @@ jobs:
               run: |
                 echo "Connecting to EC2..."
                 ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+                    cd Django_Backend/
                     ls -la
+                    git pull origin dev
+
                 EOF
              
 
