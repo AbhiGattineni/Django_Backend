@@ -27,11 +27,12 @@ jobs:
               uses: aws-actions/configure-aws-credentials@v4
               with:
                 role-to-assume: arn:aws:iam::805556599116:role/Devops-githubactions
+                aws-region: us-east-1
 
             - name: check aws creds
               run: |
                 echo $AWC_ACCESS_KEY
-                
+
 
                     
             
