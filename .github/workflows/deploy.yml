@@ -54,7 +54,7 @@ jobs:
                     MYSQL_HOST=$MYSQL_HOST
                     DB_ENGINE=$DB_ENGINE
                     DB_PORT=$DB_PORT
-                    EOT
+                EOT
 
             - name: Deploy Code to EC2
               run: |
