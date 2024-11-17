@@ -67,6 +67,8 @@ jobs:
                     export MYSQL_HOST=$MYSQL_HOST
                     export DB_ENGINE=$DB_ENGINE
                     export DB_PORT=$DB_PORT
+
+                    echo $MYSQL_DB
                     echo "Building Docker containers..."
                     docker-compose build
 
