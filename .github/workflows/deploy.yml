@@ -44,17 +44,17 @@ jobs:
               with:
                 ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-            - name: Create env file
-              run: |
-                cat <<EOT > .env
-                    SECRET_KEY=${{ secrets.SECRET_KEY }}
-                    MYSQL_DB=${{ secrets.MYSQL_DB }}
-                    MYSQL_USER=${{ secrets.MYSQL_USER }}
-                    MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-                    MYSQL_HOST=${{ secrets.MYSQL_HOST }}
-                    DB_ENGINE=${{ secrets.DB_ENGINE }}
-                    DB_PORT=${{ secrets.DB_PORT }}
-                EOT
+            # - name: Create env file
+            #   run: |
+            #     cat <<EOT > .env
+            #         SECRET_KEY=${{ secrets.SECRET_KEY }}
+            #         MYSQL_DB=${{ secrets.MYSQL_DB }}
+            #         MYSQL_USER=${{ secrets.MYSQL_USER }}
+            #         MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            #         MYSQL_HOST=${{ secrets.MYSQL_HOST }}
+            #         DB_ENGINE=${{ secrets.DB_ENGINE }}
+            #         DB_PORT=${{ secrets.DB_PORT }}
+            #     EOT
 
             - name: Deploy Code to EC2
               run: |
@@ -66,21 +66,21 @@ jobs:
                     git pull origin main
 
                     echo $MYSQL_DB
-                    RUNNING_CONTAINERS=$(docker ps -q)
-                    if [ -z "$RUNNING_CONTAINERS" ]; then
-                    echo "No running Docker containers. Skipping 'docker-compose down'."
-                    else
-                    echo "Stopping running containers..."
-                    docker-compose down
-                    fi
+                    # RUNNING_CONTAINERS=$(docker ps -q)
+                    # if [ -z "$RUNNING_CONTAINERS" ]; then
+                    # echo "No running Docker containers. Skipping 'docker-compose down'."
+                    # else
+                    # echo "Stopping running containers..."
+                    # docker-compose down
+                    # fi
 
                     echo "Contents of .env file:"
                     cat .env
-                    echo "Building Docker containers..."
-                    docker-compose --env-file .env build
+                    # echo "Building Docker containers..."
+                    # docker-compose --env-file .env build
 
-                    echo "Starting Docker containers..."
-                    docker-compose --env-file .env up
+                    # echo "Starting Docker containers..."
+                    # docker-compose --env-file .env up -d
                     
                     # echo "Waiting for containers to start..."
                     # sleep 30
