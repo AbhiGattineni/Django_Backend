@@ -45,9 +45,30 @@ jobs:
                     ls -la
                     git branch
                     git pull origin main
+                
+                    RUNNING_CONTAINERS=\$(docker ps -q)
+                    if [ -z "\$RUNNING_CONTAINERS" ]; then
+                    echo "No running Docker containers. Skipping 'docker-compose down'."
+                    else
+                    echo "Stopping running containers..."
                     docker-compose down
+                    fi
+
+                    echo "Building Docker containers..."
                     docker-compose build
+
+                    echo "Starting Docker containers..."
                     docker-compose up -d
+
+                    echo "Validating Docker container statuses..."
+                    RUNNING_CONTAINERS=\$(docker ps -q)
+                    if [ -z "\$RUNNING_CONTAINERS" ]; then
+                    echo "No Docker containers are running after 'docker-compose up'."
+                    exit 1
+                    else
+                    echo "The following containers are running:"
+                    docker ps
+                    fi
                 EOF
              
 
