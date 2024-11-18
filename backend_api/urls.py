@@ -84,4 +84,12 @@ urlpatterns = [
     path('status-consultants/', StatusConsultantListCreateAPIView.as_view(), name='status-consultant-list-create'),
     path('status-consultants/<int:pk>/', StatusConsultantRetrieveUpdateDeleteAPIView.as_view(), name='status-consultant-detail'),
     path('health/', health_check, name='health_check'),
+
+    #Team Members urls
+    path('team_members/', views.get_all_team_members, name='get_all_team_members'),
+    path('team_members/<int:pk>/', views.get_single_team_member, name='get_single_team_member'),
+    path('team_members/add/', views.add_team_member, name='add_team_member'),
+    path('team_members/delete/<int:pk>/',views.delete_team_member,name="delete_team_member"),
+    path('team_members/update/<int:pk>/',views.update_team_member,name="update_team_member"),
+    
 ]
