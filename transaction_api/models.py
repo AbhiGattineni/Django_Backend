@@ -40,9 +40,9 @@ class Transaction(models.Model):
 
     transaction_id = models.CharField(max_length=22, default=shortuuid.uuid, editable=False, unique=True)
     receiver_name = models.CharField(max_length=100, blank=False, null=False)
-    receiver_id = models.CharField(max_length=50, blank=False, null=False)
+    receiver_id = models.CharField(max_length=50, blank=True, null=True)
     sender_name = models.CharField(max_length=100, blank=False, null=False)
-    sender_id = models.CharField(max_length=50, blank=False, null=False)
+    sender_id = models.CharField(max_length=50, blank=True, null=True)
     accountant_name = models.CharField(max_length=100, blank=False, null=False)
     accountant_id = models.CharField(max_length=50, blank=False, null=False)
     credited_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=False, null=False)
