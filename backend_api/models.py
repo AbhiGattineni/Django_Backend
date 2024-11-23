@@ -292,3 +292,23 @@ class ShopingProduct(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+
+class TeamMember(models.Model):
+    name = models.CharField(max_length=100, blank=False)
+    work_time_from = models.DateField(blank=False,null=True)  # Starting date of work
+    work_time_to = models.DateField(blank=False,null=True)    # Ending date of work
+    role = models.CharField(max_length=100, blank=False)
+    description = models.TextField(blank=True)  # Description of the person
+    image = models.ImageField(upload_to='team_members/', blank=False, null=True)  # ImageField for the person's image
+    facebook_link = models.URLField(max_length=200, blank=True)  # Facebook page link
+    linkedin_link = models.URLField(max_length=200, blank=True)  # LinkedIn page link
+    github_link = models.URLField(max_length=200, blank=True)  # GitHub page link
+    subsidiary = models.CharField(max_length=100, blank=False)  # Subsidiary name
+    
+
+    class Meta:
+        db_table = 'team_member'
+
+    def __str__(self):
+        return f"{self.name}"

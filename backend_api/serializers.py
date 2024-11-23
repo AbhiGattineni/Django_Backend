@@ -14,6 +14,7 @@ from .models import CollegeDetail, ShopingProduct
 from .models import StatusConsultant, Employer, Recruiter, Consultant
 import json
 
+from .models import TeamMember
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
@@ -140,4 +141,9 @@ class CollegeDetailSerializer(serializers.ModelSerializer):
 class ShopingProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShopingProduct
+        fields = '__all__'
+
+class TeamMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamMember
         fields = '__all__'

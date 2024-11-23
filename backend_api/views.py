@@ -35,7 +35,55 @@ from .serializers import EmployerSerializer, RecruiterSerializer, StatusConsulta
 
 logger = logging.getLogger(__name__)
 
+from .models import TeamMember
+from .serializers import TeamMemberSerializer# View all team members
+@api_view(['GET'])
+def get_all_team_members(request):
+    team_members = TeamMember.objects.all()
+    serializer = TeamMemberSerializer(team_members, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
+# View a single team member by ID
+@api_view(['GET'])
+def get_single_team_member(request, pk):
+    try:
+        team_member = TeamMember.objects.get(pk=pk)
+        serializer = TeamMemberSerializer(team_member)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except TeamMember.DoesNotExist:
+        return Response({"error": "Team member not found"}, status=status.HTTP_404_NOT_FOUND)
+
+# Add a new team member
+@api_view(['POST'])
+def add_team_member(request):
+    serializer = TeamMemberSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Delete a team member by ID
+@api_view(['DELETE'])
+def delete_team_member(request, pk):
+    try:
+        team_member = TeamMember.objects.get(pk=pk)
+        team_member.delete()
+        return Response({"message": "Team member deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    except TeamMember.DoesNotExist:
+        return Response({"error": "Team member not found"}, status=status.HTTP_404_NOT_FOUND)
+
+# Update a team member by ID
+@api_view(['PUT'])
+def update_team_member(request, pk):
+    try:
+        team_member = TeamMember.objects.get(pk=pk)
+        serializer = TeamMemberSerializer(team_member, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except TeamMember.DoesNotExist:
+        return Response({"error": "Team member not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
