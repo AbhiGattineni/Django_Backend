@@ -57,7 +57,7 @@ def get_transaction(request, transaction_id):
 
 @csrf_exempt
 def update_transaction(request, transaction_id):
-    transaction = get_object_or_404(Transaction, transaction_id=transaction_id)
+    transaction = get_object_or_404(Transaction, id=transaction_id)
 
     if request.method == 'PUT':
         data = json.loads(request.body)
@@ -83,7 +83,7 @@ def update_transaction(request, transaction_id):
 
 @csrf_exempt
 def delete_transaction(request, transaction_id):
-    transaction = get_object_or_404(Transaction, transaction_id=transaction_id)
+    transaction = get_object_or_404(Transaction, id=transaction_id)
 
     if request.method == 'DELETE':
         transaction.delete()
