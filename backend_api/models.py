@@ -191,6 +191,7 @@ class Consultant(models.Model):
     rate_expectations = models.CharField(max_length=100)
     last_4_ssn = models.CharField(max_length=4)
     linkedin_url = models.URLField(max_length=200, blank=True)
+    linkedin_url_verified = models.BooleanField(default=False)
 
     # Resume Fields add
     original_resume = models.FileField(upload_to='resumes/', blank=True, null=True)
