@@ -61,25 +61,38 @@ class ConsultantSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         status_data = validated_data.pop('status_consultant', None)
+        consulting_resume = validated_data.pop('consulting_resume', None)
+        original_resume = validated_data.pop('original_resume', None)
+
+        # Create the Consultant instance
         consultant = Consultant.objects.create(**validated_data)
 
-        # Ensure status_data is a dictionary
-        if isinstance(status_data, str):
-            status_data = json.loads(status_data)
+        # Assign files if provided
+        if consulting_resume:
+            consultant.consulting_resume = consulting_resume
+        if original_resume:
+            consultant.original_resume = original_resume
+        consultant.save()
 
+        # Handle status_consultant if data exists
         if status_data:
-            # Retrieve instances for foreign key fields
-            recruiter = Recruiter.objects.get(id=status_data['recruiter_id'])
-            employer = Employer.objects.get(id=status_data['employer_id'])
+            if isinstance(status_data, str):
+                import json
+                status_data = json.loads(status_data)
+            try:
+                recruiter = Recruiter.objects.get(id=status_data['recruiter_id'])
+                employer = Employer.objects.get(id=status_data['employer_id'])
 
-            # Create StatusConsultant with related instances
-            StatusConsultant.objects.create(
-                consultant_id=consultant,
-                recruiter_id=recruiter,
-                employer_id=employer,
-                date=status_data.get('date'),
-                description=status_data.get('description')
-            )
+                StatusConsultant.objects.create(
+                    consultant_id=consultant,
+                    recruiter_id=recruiter,
+                    employer_id=employer,
+                    date=status_data.get('date'),
+                    description=status_data.get('description')
+                )
+            except (Recruiter.DoesNotExist, Employer.DoesNotExist):
+                # Skipping validation here; just log or handle as needed.
+                pass
 
         return consultant
 
