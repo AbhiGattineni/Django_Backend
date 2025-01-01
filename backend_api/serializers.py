@@ -13,6 +13,7 @@ from .models import StatusUpdates
 from .models import CollegeDetail, ShopingProduct
 from .models import StatusConsultant, Employer, Recruiter, Consultant
 import json
+from django.utils import timezone
 
 from .models import TeamMember
 class TodoSerializer(serializers.ModelSerializer):
@@ -52,7 +53,19 @@ class ConsultantSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_internal_value(self, data):
-        """Handle nested writable serializer data for status_consultant."""
+        """Convert empty strings to None for specific fields."""
+        fields_to_clean = [
+            'consulting_resume',
+            'original_resume',
+            'btech_graduation_date',
+            'masters_graduation_date',
+            'visa_validity',
+            'uploaded_date',
+        ]
+        for field in fields_to_clean:
+            if field in data and data[field] == "":
+                data[field] = None
+
         status_data = data.get('status_consultant', None)
         validated_data = super().to_internal_value(data)
         if status_data:
@@ -63,6 +76,8 @@ class ConsultantSerializer(serializers.ModelSerializer):
         status_data = validated_data.pop('status_consultant', None)
         consulting_resume = validated_data.pop('consulting_resume', None)
         original_resume = validated_data.pop('original_resume', None)
+        btech_graduation_date = validated_data.pop('btech_graduation_date', None)
+        masters_graduation_date = validated_data.pop('masters_graduation_date', None)
 
         # Create the Consultant instance
         consultant = Consultant.objects.create(**validated_data)
@@ -72,16 +87,21 @@ class ConsultantSerializer(serializers.ModelSerializer):
             consultant.consulting_resume = consulting_resume
         if original_resume:
             consultant.original_resume = original_resume
+        if btech_graduation_date:
+            consultant.btech_graduation_date = btech_graduation_date
+        if masters_graduation_date:
+            consultant.masters_graduation_date = masters_graduation_date
         consultant.save()
 
+        if isinstance(status_data, str):
+            status_data = json.loads(status_data)
         # Handle status_consultant if data exists
-        if status_data:
-            if isinstance(status_data, str):
-                import json
-                status_data = json.loads(status_data)
+        if status_data["description"]:
             try:
                 recruiter = Recruiter.objects.get(id=status_data['recruiter_id'])
                 employer = Employer.objects.get(id=status_data['employer_id'])
+                if status_data["date"] == "":
+                    status_data["date"] = timezone.localdate()
 
                 StatusConsultant.objects.create(
                     consultant_id=consultant,

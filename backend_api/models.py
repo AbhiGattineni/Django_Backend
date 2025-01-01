@@ -167,12 +167,12 @@ class Consultant(models.Model):
     visa_validity_verified = models.BooleanField(default=False)
 
     # Education Details
-    btech_college = models.CharField(max_length=100)
-    btech_percentage = models.DecimalField(max_digits=5, decimal_places=2)
-    btech_graduation_date = models.DateField()
-    masters_college = models.CharField(max_length=100)
-    masters_cgpa = models.DecimalField(max_digits=4, decimal_places=2)
-    masters_graduation_date = models.DateField()
+    btech_college = models.CharField(max_length=100,blank=True,null=True)
+    btech_percentage = models.DecimalField(max_digits=5, decimal_places=2,blank=True,null=True)
+    btech_graduation_date = models.DateField(blank=True,null=True)
+    masters_college = models.CharField(max_length=100,blank=True,null=True)
+    masters_cgpa = models.DecimalField(max_digits=4, decimal_places=2,blank=True,null=True)
+    masters_graduation_date = models.DateField(blank=True,null=True)
 
     # Professional Details
     technologies = models.JSONField()  # Storing an array of strings
@@ -182,16 +182,17 @@ class Consultant(models.Model):
     experience_in_us_verified = models.BooleanField(default=False)
     experience_in_india = models.TextField()  # To store detailed text
     experience_in_india_verified = models.BooleanField(default=False)
-    relocation_preference = models.TextField()  # Cities and states
+    relocation_preference = models.TextField(blank=True,null=True)  # Cities and states
 
     # Personal Details
     passport_number = models.CharField(max_length=50, blank=True)
     passport_number_verified = models.BooleanField(default=False)
     driving_licence = models.CharField(max_length=50, blank=True)
-    rate_expectations = models.CharField(max_length=100)
-    last_4_ssn = models.CharField(max_length=4)
+    rate_expectations = models.CharField(max_length=100,blank=True,null=True)
+    last_4_ssn = models.CharField(max_length=4,blank=True,null=True)
     linkedin_url = models.URLField(max_length=200, blank=True)
     linkedin_url_verified = models.BooleanField(default=False)
+    uploaded_date = models.DateField(default=timezone.localdate)
 
     # Resume Fields add
     original_resume = models.FileField(upload_to='resumes/', blank=True, null=True)
@@ -207,7 +208,7 @@ class StatusConsultant(models.Model):
     consultant_id = models.ForeignKey(Consultant, on_delete=models.CASCADE, default=None)
     recruiter_id = models.ForeignKey(Recruiter, on_delete=models.CASCADE, default=None)
     employer_id = models.ForeignKey(Employer, on_delete=models.CASCADE, default=None)
-    date = models.DateField(default=timezone.now)
+    date = models.DateField(default=timezone.localdate,null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
