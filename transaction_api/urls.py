@@ -10,4 +10,5 @@ urlpatterns = [
     # path('transactions/filter/', views.get_transactions_by_fields, name='get_transactions_by_fields'),
     # path('transactions/date-range/', views.transaction_date_range_view, name='transaction-date-range'),
     path('transactions/filter/', views.get_filter_transactions, name='get-filter-transactions'),
+    path('transactions/aps/', views.get_aps_transactions, name='get_aps_transactions'),
 ]
