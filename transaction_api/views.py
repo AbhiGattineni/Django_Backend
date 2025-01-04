@@ -227,3 +227,45 @@ def get_filter_transactions(request):
     transaction_data = list(transactions.values())
 
     return JsonResponse(transaction_data, safe=False, status=200)
+
+def mask_name(name):
+    if 'anddhen' in name.lower():
+        return name
+    
+    parts = name.split()
+    masked_parts = [
+        f"{part[0]}{'*' * (len(part) - 1)}" if len(part) > 1 else part 
+        for part in parts
+    ]
+    return ' '.join(masked_parts)
+
+@csrf_exempt
+def get_aps_transactions(request):
+    if request.method == 'GET':
+        transactions = Transaction.objects.filter(subsidiary='APS').order_by('transaction_datetime').values(
+            'id',
+            'receiver_name',
+            'sender_name',
+            'credited_amount',
+            'debited_amount',
+            'transaction_datetime',
+            'transaction_type'
+        )
+        
+        # Mask the names and prepare the response
+        aps_transactions = [
+            {
+                'id': transaction['id'],
+                'receiver_name': mask_name(transaction['receiver_name']),
+                'sender_name': mask_name(transaction['sender_name']),
+                'credited_amount': transaction['credited_amount'],
+                'debited_amount': transaction['debited_amount'],
+                'transaction_datetime': transaction['transaction_datetime'],
+                'transaction_type': transaction['transaction_type'],
+            }
+            for transaction in transactions
+        ]
+        
+        return JsonResponse(aps_transactions, safe=False, status=200)
+    else:
+        return JsonResponse({'message': 'Invalid request method'}, status=405)
