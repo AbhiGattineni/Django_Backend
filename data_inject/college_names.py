@@ -1,7 +1,13 @@
+# adding the college data to database by iterating the each row of every sheet of an excel
+
 import pandas as pd
 import mysql.connector
 from mysql.connector import Error
 from openpyxl import load_workbook
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 def get_hyperlinks(sheet, index):
@@ -130,12 +136,12 @@ def read_excel_and_insert_to_mysql(excel_file, db_config):
             conn.close()
             print("MySQL connection is closed")
 
-# Database configuration
+# Database configuration details
 db_config = {
-    'host': 'database.ctnj0eswvoik.us-west-2.rds.amazonaws.com',
-    'user': 'admin',
-    'password': 'AbhishekAWS1234',
-    'database': 'MYBLOG'
+    'host': os.getenv('MYSQL_HOST', 'localhost'),
+    'user': os.getenv('MYSQL_USER', ''),
+    'password': os.getenv('MYSQL_ROOT_PASSWORD', ''),
+    'database': os.getenv('MYSQL_DB', 'default_db_name')
 }
 
 # Specify the path to your Excel file
