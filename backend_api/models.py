@@ -314,3 +314,20 @@ class TeamMember(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+    
+
+
+class DeviceAllocation(models.Model):
+    device_type = models.CharField(max_length=100, blank=False)  # Type of device
+    device_name = models.CharField(max_length=100, blank=False)  # Name of the device
+    about_device = models.TextField(blank=True)  # Description of the device
+    allocated_to = models.CharField(max_length=100, blank=False)  # Must always have a value
+    from_date = models.DateField(blank=False, null=True)  # Start date of allocation
+    to_date = models.DateField(blank=False, null=True)  # End date of allocation
+    purpose = models.TextField(blank=True, null=True)  # Optional field
+
+    class Meta:
+        db_table = 'device_allocation'
+    
+    def __str__(self):
+        return f"{self.device_name}" 

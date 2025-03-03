@@ -12,6 +12,7 @@ from .models import AcsParttimerStatus
 from .models import StatusUpdates
 from .models import CollegeDetail, ShopingProduct
 from .models import StatusConsultant, Employer, Recruiter, Consultant
+from .models import DeviceAllocation
 import json
 from django.utils import timezone
 
@@ -179,4 +180,9 @@ class ShopingProductSerializer(serializers.ModelSerializer):
 class TeamMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamMember
+        fields = '__all__'
+
+class DeviceAllocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeviceAllocation
         fields = '__all__'

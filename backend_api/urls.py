@@ -25,6 +25,7 @@ from .views import (
     StatusConsultantListCreateAPIView, StatusConsultantRetrieveUpdateDeleteAPIView
 )
 
+
 urlpatterns = [
     path('api', TodoListApiView.as_view()),
     path('api/<int:todo_id>/', TodoDetailApiView.as_view()),
@@ -91,5 +92,11 @@ urlpatterns = [
     path('team_members/add/', views.add_team_member, name='add_team_member'),
     path('team_members/delete/<int:pk>/',views.delete_team_member,name="delete_team_member"),
     path('team_members/update/<int:pk>/',views.update_team_member,name="update_team_member"),
+
+    path('devices/', views.get_all_devices, name='get_all_devices'),
+    path('devices/<int:pk>/', views.get_single_device, name='get_single_device'),
+    path('devices/add/', views.add_device, name='add_device'),
+    path('devices/delete/<int:pk>/', views.delete_device, name='delete_device'),
+    path('devices/update/<int:pk>/', views.update_device, name='update_device'),
     
 ]
