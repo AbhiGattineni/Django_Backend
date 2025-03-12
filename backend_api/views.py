@@ -781,38 +781,69 @@ def get_status_by_id(request, user_id):
     else:
         return JsonResponse({'message': 'Invalid request method'}, status=405)
 
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from .models import StatusUpdates
+
 @api_view(['POST'])
 @csrf_exempt
 def create_status(request):
     try:
         if request.method == "POST":
             data = request.data  # Use request.data for JSON data
-            
+
             try:
                 # Validate date to ensure it's not in the future
-                if data.get("date"):
-                    date_value = timezone.make_aware(timezone.datetime.strptime(data["date"], "%Y-%m-%d"))
-                    if date_value > timezone.now():
+                if "date" in data and data["date"]:
+                    date_value = timezone.datetime.strptime(data["date"], "%Y-%m-%d").date()
+                    if date_value > timezone.localdate():
                         return JsonResponse({"message": "Date cannot be in the future"}, status=400)
-                
-                # Check if there's an existing record with the same studentId, parttimerId, and date
-                existing_application = StatusUpdates.objects.filter(
-                    user_id=data["user_id"],
-                    date=data["date"]
+
+                # Check if there's an existing record with the same user_id, subsidiary, and date
+                existing_status = StatusUpdates.objects.filter(
+                    user_id=data.get("user_id"),
+                    date=data.get("date"),
+                    subsidary=data.get("subsidary")
                 ).first()
                 
-                if existing_application:
+                if existing_status:
                     return JsonResponse({"message": "Already submitted..!"}, status=400)
                 
-                # Create a new AcsParttimerStatus object
+                # Create a new status record
                 StatusUpdates.objects.create(
-                    user_id = data["user_id"],
-                    user_name = data["user_name"],
-                    date = data["date"],
-                    status = data["status"]
+                    user_id=data["user_id"],
+                    user_name=data["user_name"],
+                    subsidary=data["subsidary"],
+                    source=data.get("source", None),
+                    date=data["date"],
+                    description=data.get("description", None),
+                    studentName=data.get("studentName", None),
+                    studentId=data.get("studentId", None),
+                    applicationsAppliedSearched=data.get("applicationsAppliedSearched", 0),
+                    applicationsAppliedSaved=data.get("applicationsAppliedSaved", 0),
+                    easyApply=data.get("easyApply", 0),
+                    recruiterDirectMessages=data.get("recruiterDirectMessages", None),
+                    connectMessages=data.get("connectMessages", None),
+                    reason=data.get("reason", None),
+                    ticket_link=data.get("ticket_link", None),
+                    github_link=data.get("github_link", None),
+                    account_name=data.get("account_name", None),
+                    stock_name=data.get("stock_name", None),
+                    stock_quantity=data.get("stock_quantity", None),
+                    stock_value=data.get("stock_value", None),
+                    transaction_type=data.get("transaction_type", None),
+                    total_current_amount=data.get("total_current_amount", None),
+                    pickup_location=data.get("pickup_location", None),
+                    pickup_contact=data.get("pickup_contact", None),
+                    dropoff_location=data.get("dropoff_location", None),
+                    dropoff_contact=data.get("dropoff_contact", None),
+                    distance_travelled=data.get("distance_travelled", None),
+                    whatsapp_group_number=data.get("whatsapp_group_number", None)
                 )
                 
-                return JsonResponse({"message": "Status saved successfully"})
+                return JsonResponse({"message": "Status saved successfully"}, status=201)
             
             except KeyError as e:
                 field = e.args[0]
@@ -820,7 +851,7 @@ def create_status(request):
             
             except Exception as e:
                 return JsonResponse({"message": "Something went wrong! Try again."}, status=500)
-        
+    
     except Exception as e:
         return JsonResponse({"message": "Something went wrong!"}, status=500)
     
@@ -836,24 +867,18 @@ def get_status(request):
         return JsonResponse({'error': 'Invalid JSON.'}, status=400)
 
     filters = {}
-
-    # Extract common fields from the request body
     user_id = data.get("user_id")
     date = data.get("date")
-
-    # Build filter dictionary
     if user_id:
         filters['user_id'] = user_id
     if date:
         filters['date'] = date
 
-    # Extract date range fields
     start_date = data.get('start_date')
     end_date = data.get('end_date')
 
     if start_date and end_date:
         try:
-            # Parsing the dates to ensure they are valid
             start_date = parse_datetime(start_date)
             end_date = parse_datetime(end_date)
             if not start_date or not end_date:
@@ -864,15 +889,10 @@ def get_status(request):
         if start_date > end_date:
             return JsonResponse({'error': 'start_date must be before end_date.'}, status=400)
 
-        # Add date range filter
         filters['date__range'] = [start_date, end_date]
 
-    # Query status updates based on filters
     status = StatusUpdates.objects.filter(**filters)
-
-    # Convert queryset to list of dictionaries
     status_data = list(status.values())
-
     return JsonResponse(status_data, safe=False, status=200)
 
 @api_view(['PUT'])
@@ -880,34 +900,22 @@ def get_status(request):
 def update_status_by_id(request):
     try:
         if request.method == "PUT":
-            data = request.data  # Use request.data for JSON data
+            data = request.data
+            existing_application = StatusUpdates.objects.filter(
+                user_id=data.get("user_id"),
+                date=data.get("date")
+            ).first()
             
-            try:
-                # Check if there's an existing record with the same studentId, parttimerId, and date
-                existing_application = StatusUpdates.objects.filter(
-                    user_id=data["user_id"],
-                    date=data["date"]
-                ).first()
-                
-                if existing_application:
-                    # Update existing application
-                    existing_application.user_id = data["user_id"]
-                    existing_application.user_name = data["user_name"]
-                    existing_application.date = data["date"]
-                    existing_application.status = data["status"]
-                    existing_application.save()
-                    
-                    return JsonResponse({"message": "Status updated successfully"})
-                else:
-                    return JsonResponse({"message": "No record found to update"}, status=404)
-            
-            except KeyError as e:
-                field = e.args[0]
-                return JsonResponse({"message": f"{field} required field is missing"}, status=400)
-            
-            except Exception as e:
-                return JsonResponse({"message": "An error occurred"}, status=500)
-        
+            if existing_application:
+                for key, value in data.items():
+                    if hasattr(existing_application, key) and value is not None:
+                        setattr(existing_application, key, value)
+                existing_application.save()
+                return JsonResponse({"message": "Status updated successfully"})
+            else:
+                return JsonResponse({"message": "No record found to update"}, status=404)
+    except KeyError as e:
+        return JsonResponse({"message": f"{e.args[0]} required field is missing"}, status=400)
     except Exception as e:
         return JsonResponse({"message": "An error occurred"}, status=500)
 
@@ -915,12 +923,10 @@ def update_status_by_id(request):
 @csrf_exempt
 def delete_status_by_id(request):
     try:
-        data = request.data  # Use request.data for JSON data
-        
-        # Check if there's an existing record with the provided criteria
+        data = request.data
         existing_application = StatusUpdates.objects.filter(
-            user_id=data["user_id"],
-            date=data["date"]
+            user_id=data.get("user_id"),
+            date=data.get("date")
         ).first()
         
         if existing_application:
@@ -928,13 +934,11 @@ def delete_status_by_id(request):
             return JsonResponse({"message": "Application deleted successfully"}, status=204)
         else:
             return JsonResponse({"error": "Application not found"}, status=404)
-        
     except KeyError as e:
-        field = e.args[0]
-        return JsonResponse({"error": f"{field} required field is missing"}, status=400)
+        return JsonResponse({"error": f"{e.args[0]} required field is missing"}, status=400)
     except Exception as e:
         return JsonResponse({"error": "An error occurred"}, status=500)
-    
+
 @api_view(['GET'])
 def get_college_details(request):
     if request.method == 'GET':

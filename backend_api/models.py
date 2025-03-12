@@ -269,10 +269,40 @@ class AcsParttimerStatus(models.Model):
 
 
 class StatusUpdates(models.Model):
+    BUY = 'buy'
+    SELL = 'sell'
+    TRANSACTION_TYPE_CHOICES = [
+        (BUY, 'Buy'),
+        (SELL, 'Sell')
+    ]
     user_id = models.CharField(max_length=100, blank=False)
     user_name = models.CharField(max_length=100, blank=False)
-    date = models.DateField(blank=False, validators=[MaxValueValidator(current_date)])
-    status = models.CharField(max_length=100, blank=False)
+    subsidary = models.CharField(max_length=100, blank=False)
+    source = models.CharField(max_length=200, blank=True, null=True)
+    date = models.DateField(blank=False, validators=[MaxValueValidator(current_date)], default=timezone.localdate)
+    description = models.CharField(max_length=500, blank=True, null=True)
+    studentName = models.CharField(max_length=100, blank=True, null=True)
+    studentId = models.CharField(max_length=100, blank=True, null=True)
+    applicationsAppliedSearched = models.IntegerField(default=0, blank=True, null=True)
+    applicationsAppliedSaved = models.IntegerField(default=0, blank=True, null=True)
+    easyApply = models.IntegerField(default=0, blank=True, null=True)
+    recruiterDirectMessages = models.CharField(max_length=200, blank=True, null=True)
+    connectMessages = models.CharField(max_length=200, blank=True, null=True)
+    reason = models.CharField(max_length=500, blank=True, null=True)
+    ticket_link = models.CharField(max_length=100, blank=True, null=True)
+    github_link = models.CharField(max_length=100, blank=True, null=True)
+    account_name = models.CharField(max_length=255, blank=True, null=True)
+    stock_name = models.CharField(max_length=255, blank=True, null=True)
+    stock_quantity = models.PositiveIntegerField(blank=True, null=True)
+    stock_value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    transaction_type = models.CharField(max_length=4, choices=TRANSACTION_TYPE_CHOICES, blank=True, null=True)
+    total_current_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
+    pickup_location = models.CharField(max_length=255, blank=True, null=True)
+    pickup_contact = models.CharField(max_length=15, blank=True, null=True)
+    dropoff_location = models.CharField(max_length=255, blank=True, null=True)
+    dropoff_contact = models.CharField(max_length=15, blank=True, null=True)
+    distance_travelled = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    whatsapp_group_number = models.CharField(max_length=15, blank=True, null=True)
 
     class Meta:
         db_table = 'Status_updates'
@@ -280,7 +310,6 @@ class StatusUpdates(models.Model):
     def __str__(self):
         return f"{self.user_name}'s status added on {self.date}"
     
-from django.db import models
 
 class ShopingProduct(models.Model):
     name = models.CharField(max_length=100, blank=False)
