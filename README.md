@@ -153,7 +153,7 @@ In the "Setup New Connection" dialog, enter the following details:
   database this connection refers to.
 - **Connection Method**: Choose "Standard (TCP/IP)" for most cases.
 - **Hostname**: Enter the IP address or domain name of your MySQL server. If the server is on your local machine,
-  use, `database.ctnj0eswvoik.us-west-2.rds.amazonaws.com`.
+   **Please Take the Hostname from Authorities of Andheen Group**
 - **Port**: The default MySQL port is `3306`. We will keep it as is.
 - **Username**: Enter the username you use to access the database, it is `root` in our case.
 
