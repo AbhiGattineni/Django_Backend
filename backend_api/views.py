@@ -26,11 +26,11 @@ from rest_framework.views import APIView
 from rest_framework import generics
 
 from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role, PartTimer, Package, ShopingProduct
-from .serializers import StatusUpdatesSerializer, TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer, PartTimerSerializer, PackageSerializer, ShopingProductSerializer
+from .serializers import StatusUpdatesSerializer, TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer, PartTimerSerializer, PackageSerializer, ShopingProductSerializer,DeviceAllocationSerializer
 
 
 from rest_framework.generics import get_object_or_404
-from .models import Employer, Recruiter, StatusConsultant, Consultant
+from .models import Employer, Recruiter, StatusConsultant, Consultant,DeviceAllocation
 from .serializers import EmployerSerializer, RecruiterSerializer, StatusConsultantSerializer
 
 logger = logging.getLogger(__name__)
@@ -1176,3 +1176,54 @@ class StatusConsultantRetrieveUpdateDeleteAPIView(APIView):
 
 def health_check(request):
     return JsonResponse({'status': 'ok'})
+
+
+
+# Get all device allocations
+@api_view(['GET'])
+def get_all_devices(request):
+    devices = DeviceAllocation.objects.all()
+    serializer = DeviceAllocationSerializer(devices, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Get a single device allocation by ID
+@api_view(['GET'])
+def get_single_device(request, pk):
+    try:
+        device = DeviceAllocation.objects.get(pk=pk)
+        serializer = DeviceAllocationSerializer(device)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except DeviceAllocation.DoesNotExist:
+        return Response({"error": "Device allocation not found"}, status=status.HTTP_404_NOT_FOUND)
+
+# Add a new device allocation
+@api_view(['POST'])
+def add_device(request):
+    serializer = DeviceAllocationSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Update an existing device allocation
+@api_view(['PUT'])
+def update_device(request, pk):
+    try:
+        device = DeviceAllocation.objects.get(pk=pk)
+        serializer = DeviceAllocationSerializer(device, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except DeviceAllocation.DoesNotExist:
+        return Response({"error": "Device allocation not found"}, status=status.HTTP_404_NOT_FOUND)
+
+# Delete a device allocation
+@api_view(['DELETE'])
+def delete_device(request, pk):
+    try:
+        device = DeviceAllocation.objects.get(pk=pk)
+        device.delete()
+        return Response({"message": "Device allocation deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    except DeviceAllocation.DoesNotExist:
+        return Response({"error": "Device allocation not found"}, status=status.HTTP_404_NOT_FOUND)
