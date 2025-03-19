@@ -71,10 +71,9 @@ CORS_ALLOW_METHODS = [
     "DELETE",
 ]
 
-CORS_ORIGIN_WHITELIST = (
+CORS_ORIGIN_WHITELIST = [
     "https://www.anddhengroup.com"
-    
-)
+    ]
 
 ROOT_URLCONF = 'Django_Backend.urls'
 
