@@ -72,8 +72,7 @@ CORS_ALLOW_METHODS = [
 ]
 
 CORS_ORIGIN_WHITELIST = (
-    "https://www.anddhengroup.com"
-    
+    "https://www.anddhengroup.com",  
 )
 
 ROOT_URLCONF = 'Django_Backend.urls'
@@ -109,12 +108,15 @@ WSGI_APPLICATION = 'Django_Backend.wsgi.application'
 
 DATABASES = {
      'default': {
-        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
+        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.mysql'),
         'NAME': os.getenv('MYSQL_DB', 'default_db_name'),
         'HOST': os.getenv('MYSQL_HOST', 'localhost'),
         'USER': os.getenv('MYSQL_USER', ''),
         'PASSWORD': os.getenv('MYSQL_ROOT_PASSWORD', ''),
-        'PORT': os.getenv('DB_PORT','3306')
+        'PORT': os.getenv('DB_PORT','3306'),
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        },
     }
 }
 
