@@ -1302,7 +1302,6 @@ def submit_happiness_index(request, user_id):
                 {"message": "You have already submitted your happiness index for today."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
         # If they haven't submitted, proceed to save the happiness index
         happiness_score = request.data.get('happiness_score')
         description = request.data.get('description', '')
@@ -1330,11 +1329,31 @@ def get_happiness_index(request,user_id):
     try:
         # Fetch the user object using the user_id (from get_user_by_id call)
         user = User.objects.get(user_id=user_id)
-
+        
         # Retrieve all the happiness index records for this employee
         happiness_indexes = HappinessIndex.objects.filter(employee=user)
-
+        
         # If there are no records, return a message
+        if not happiness_indexes:
+            return Response({"message": "No happiness index records found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Serialize the happiness indexes
+        serializer = HappinessIndexSerializer(happiness_indexes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    except User.DoesNotExist:
+        return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+        return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def get_all_happiness_indexes(request):
+    try:
+        # Retrieve all happiness index records from the database
+        happiness_indexes = HappinessIndex.objects.all()
+
+        # If no records are found, return a message
         if not happiness_indexes:
             return Response({"message": "No happiness index records found."}, status=status.HTTP_404_NOT_FOUND)
 

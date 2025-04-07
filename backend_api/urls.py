@@ -27,6 +27,9 @@ from .views import (
 from .views import(
 submit_happiness_index,get_happiness_index
 )
+from .views import(
+submit_happiness_index,get_happiness_index,get_all_happiness_indexes
+)
 
 urlpatterns = [
     path('api', TodoListApiView.as_view()),
@@ -104,5 +107,6 @@ urlpatterns = [
     path('happiness-index/add/<str:user_id>/', views.submit_happiness_index, name='submit_happiness_index'),
     path('happiness-index/<str:user_id>/', views.get_happiness_index, name='get_happiness_index'),
     path('happiness/', HappinessIndexListView.as_view(), name='happiness-index-list'),
+    path('happiness-index/', views.get_all_happiness_indexes, name='get_all_happiness_indexes'),
 
 ]

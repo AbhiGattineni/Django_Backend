@@ -365,10 +365,11 @@ class DeviceAllocation(models.Model):
 from django.utils import timezone
 
 class HappinessIndex(models.Model):
-    employee = models.ForeignKey(User, on_delete=models.CASCADE)
+    employee = models.ForeignKey(User, on_delete=models.CASCADE)  # Reference Employee model
     happiness_score = models.IntegerField(blank=False)
     description = models.TextField(blank=True, null=True)
     date = models.DateField(default=timezone.now, unique_for_date="employee")
+
     class Meta:
         db_table = 'happiness_index'
         unique_together = ('employee', 'date')
