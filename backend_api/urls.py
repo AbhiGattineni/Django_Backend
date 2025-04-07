@@ -24,7 +24,9 @@ from .views import (
     RecruiterListCreateAPIView, RecruiterRetrieveUpdateDeleteAPIView,
     StatusConsultantListCreateAPIView, StatusConsultantRetrieveUpdateDeleteAPIView
 )
-
+from .views import(
+submit_happiness_index,get_happiness_index,get_all_happiness_indexes
+)
 
 urlpatterns = [
     path('api', TodoListApiView.as_view()),
@@ -98,5 +100,9 @@ urlpatterns = [
     path('devices/add/', views.add_device, name='add_device'),
     path('devices/delete/<int:pk>/', views.delete_device, name='delete_device'),
     path('devices/update/<int:pk>/', views.update_device, name='update_device'),
-    
+
+    path('happiness-index/add/<str:user_id>/', views.submit_happiness_index, name='submit_happiness_index'),
+    path('happiness-index/<str:user_id>/', views.get_happiness_index, name='get_happiness_index'),
+    path('happiness-index/', views.get_all_happiness_indexes, name='get_all_happiness_indexes'),
+
 ]
