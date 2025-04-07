@@ -13,6 +13,7 @@ from .models import StatusUpdates
 from .models import CollegeDetail, ShopingProduct
 from .models import StatusConsultant, Employer, Recruiter, Consultant
 from .models import DeviceAllocation
+from .models import HappinessIndex
 import json
 from django.utils import timezone
 
@@ -162,10 +163,8 @@ class AcsParttimerStatusSerializer(serializers.ModelSerializer):
         model = AcsParttimerStatus
         fields = '__all__'
 
-class StatusUpdatesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StatusUpdates
-        fields = '__all__'
+from rest_framework import serializers
+from .models import StatusUpdates, HappinessIndex
 
 class CollegeDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -186,3 +185,14 @@ class DeviceAllocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceAllocation
         fields = '__all__'
+
+
+class StatusUpdatesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StatusUpdates
+        fields = '__all__'
+
+class HappinessIndexSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HappinessIndex
+        fields = ['employee', 'happiness_score', 'description', 'date']
