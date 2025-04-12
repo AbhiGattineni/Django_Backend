@@ -412,7 +412,6 @@ def user_data_and_roles_view(request):
     request_json = json.dumps(request_data, indent=4)
 
     # Print the JSON string
-    print(request_json)
     # Fetching all users
     users = User.objects.all()
     users_serializer = UserSerializer(users, many=True)
@@ -436,11 +435,9 @@ def user_data_and_roles_view(request):
 # view to assign a role to a user
 @api_view(['POST'])
 def assign_role(request):
-    print(request.data)
     try:
         user_id = request.data.get('user')
         role_id = request.data.get('role')
-        print(user_id, role_id)
         # Fetch user name and role name
         try:
             user_name = User.objects.get(user_id=user_id).full_name
@@ -495,7 +492,6 @@ def create_part_timer(request):
                 print("Errors:", part_timer_serializer.errors)
                 return Response(part_timer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            print("User not found.")
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         print("An error occurred:", e)
@@ -506,7 +502,6 @@ def get_part_timer(request, user_id):
     try:
         # Find the part-timer information based on the user_id
         user = User.objects.get(user_id=user_id)
-        print(user)
 
         if user:
             # Serialize the part-timer data
@@ -792,7 +787,7 @@ from .models import StatusUpdates
 def create_status(request):
     try:
         if request.method == "POST":
-            data = request.data  # Use request.data for JSON data
+            data = request.data
 
             try:
                 # Validate date to ensure it's not in the future
@@ -801,20 +796,33 @@ def create_status(request):
                     if date_value > timezone.localdate():
                         return JsonResponse({"message": "Date cannot be in the future"}, status=400)
 
+                user_id = data.get("user_id")
+                if not user_id:
+                    return JsonResponse({"message": "user_id is required"}, status=400)
+
                 # Check if there's an existing record with the same user_id, subsidiary, and date
                 existing_status = StatusUpdates.objects.filter(
-                    user_id=data.get("user_id"),
+                    user_id=user_id,
                     date=data.get("date"),
                     subsidary=data.get("subsidary")
                 ).first()
                 
                 if existing_status:
                     return JsonResponse({"message": "Already submitted..!"}, status=400)
-                
+
+                # Get user_name from the request or fetch full_name from User model
+                user_name = data.get("user_name")
+                if not user_name:
+                    try:
+                        user = User.objects.get(user_id=user_id)
+                        user_name = user.full_name
+                    except User.DoesNotExist:
+                        return JsonResponse({"message": "User not found for the given user_id"}, status=400)
+
                 # Create a new status record
                 StatusUpdates.objects.create(
-                    user_id=data["user_id"],
-                    user_name=data["user_name"],
+                    user_id=user_id,
+                    user_name=user_name,
                     subsidary=data["subsidary"],
                     source=data.get("source", None),
                     date=data["date"],
