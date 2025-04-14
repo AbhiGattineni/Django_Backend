@@ -22,10 +22,10 @@ from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDel
 from .views import (
     EmployerListCreateAPIView, EmployerRetrieveUpdateDeleteAPIView,
     RecruiterListCreateAPIView, RecruiterRetrieveUpdateDeleteAPIView,
-    StatusConsultantListCreateAPIView, StatusConsultantRetrieveUpdateDeleteAPIView
+    StatusConsultantListCreateAPIView, StatusConsultantRetrieveUpdateDeleteAPIView,HappinessIndexListView
 )
 from .views import(
-submit_happiness_index,get_happiness_index,get_all_happiness_indexes
+submit_happiness_index,get_happiness_index
 )
 
 urlpatterns = [
@@ -103,6 +103,6 @@ urlpatterns = [
 
     path('happiness-index/add/<str:user_id>/', views.submit_happiness_index, name='submit_happiness_index'),
     path('happiness-index/<str:user_id>/', views.get_happiness_index, name='get_happiness_index'),
-    path('happiness-index/', views.get_all_happiness_indexes, name='get_all_happiness_indexes'),
+    path('happiness/', HappinessIndexListView.as_view(), name='happiness-index-list'),
 
 ]
