@@ -193,6 +193,11 @@ class StatusUpdatesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class HappinessIndexSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+
     class Meta:
         model = HappinessIndex
-        fields = ['employee', 'happiness_score', 'description', 'date']
+        fields = ['id', 'employee', 'happiness_score', 'description', 'date', 'full_name']
+
+    def get_full_name(self, obj):
+        return obj.employee.full_name 

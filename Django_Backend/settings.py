@@ -72,8 +72,7 @@ CORS_ALLOW_METHODS = [
 ]
 
 CORS_ORIGIN_WHITELIST = (
-    "https://www.anddhengroup.com", 
-     "http://localhost:3000"
+    "https://www.anddhengroup.com"
 )
 
 ROOT_URLCONF = 'Django_Backend.urls'
