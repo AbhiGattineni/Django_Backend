@@ -848,7 +848,8 @@ def create_status(request):
                     dropoff_location=data.get("dropoff_location", None),
                     dropoff_contact=data.get("dropoff_contact", None),
                     distance_travelled=data.get("distance_travelled", None),
-                    whatsapp_group_number=data.get("whatsapp_group_number", None)
+                    whatsapp_group_number=data.get("whatsapp_group_number", None),
+                    leave=data.get("leave", None)
                 )
                 
                 return JsonResponse({"message": "Status saved successfully"}, status=201)
