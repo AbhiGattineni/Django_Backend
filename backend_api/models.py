@@ -303,6 +303,7 @@ class StatusUpdates(models.Model):
     dropoff_contact = models.CharField(max_length=15, blank=True, null=True)
     distance_travelled = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     whatsapp_group_number = models.CharField(max_length=15, blank=True, null=True)
+    leave = models.BooleanField(default=False, null=True)
 
     class Meta:
         db_table = 'Status_updates'
