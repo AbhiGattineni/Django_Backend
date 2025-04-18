@@ -1253,7 +1253,6 @@ def get_status_by_id(request, user_id):
             {'message': 'Invalid request method'}, 
             status=405
         )
-<<<<<<< HEAD
 @api_view(['GET'])
 @csrf_exempt
 def get_status_by_id(request, user_id):
@@ -1286,37 +1285,23 @@ def get_status_by_id(request, user_id):
             {'message': 'Invalid request method'}, 
             status=405
         )
-=======
->>>>>>> c0078907c1c4c6860ed7bd4c3796e778ae7daeaa
 
 @api_view(['POST'])
 def submit_happiness_index(request, user_id):
     try:
         # Fetch the user object using the user_id (from get_user_by_id call)
         user = User.objects.get(user_id=user_id)
-<<<<<<< HEAD
 
         # Check if the employee has already submitted happiness for today
         today = timezone.now().date()
         has_submitted = HappinessIndex.objects.filter(employee=user, date=today).exists()
 
-=======
-        
-        # Check if the employee has already submitted happiness for today
-        today = timezone.now().date()
-        has_submitted = HappinessIndex.objects.filter(employee=user, date=today).exists()
-        
->>>>>>> c0078907c1c4c6860ed7bd4c3796e778ae7daeaa
         if has_submitted:
             return Response(
                 {"message": "You have already submitted your happiness index for today."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> c0078907c1c4c6860ed7bd4c3796e778ae7daeaa
         # If they haven't submitted, proceed to save the happiness index
         happiness_score = request.data.get('happiness_score')
         description = request.data.get('description', '')
@@ -1332,7 +1317,6 @@ def submit_happiness_index(request, user_id):
         # Serialize the data to return a response
         serializer = HappinessIndexSerializer(happiness_index)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-<<<<<<< HEAD
 
     except User.DoesNotExist:
         return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -1340,21 +1324,11 @@ def submit_happiness_index(request, user_id):
     except Exception as e:
         return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-=======
-    
-    except User.DoesNotExist:
-        return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-    
-    except Exception as e:
-        return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
->>>>>>> c0078907c1c4c6860ed7bd4c3796e778ae7daeaa
 @api_view(['GET'])
 def get_happiness_index(request,user_id):
     try:
         # Fetch the user object using the user_id (from get_user_by_id call)
         user = User.objects.get(user_id=user_id)
-<<<<<<< HEAD
 
         # Retrieve all the happiness index records for this employee
         happiness_indexes = HappinessIndex.objects.filter(employee=user)
@@ -1362,40 +1336,10 @@ def get_happiness_index(request,user_id):
         # If there are no records, return a message
         if not happiness_indexes:
             return Response({"message": "No happiness index records found."}, status=status.HTTP_404_NOT_FOUND)
-=======
-        
-        # Retrieve all the happiness index records for this employee
-        happiness_indexes = HappinessIndex.objects.filter(employee=user)
-        
-        # If there are no records, return a message
-        if not happiness_indexes:
-            return Response({"message": "No happiness index records found."}, status=status.HTTP_404_NOT_FOUND)
-        
-        # Serialize the happiness indexes
-        serializer = HappinessIndexSerializer(happiness_indexes, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    except User.DoesNotExist:
-        return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-    
-    except Exception as e:
-        return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-@api_view(['GET'])
-def get_all_happiness_indexes(request):
-    try:
-        # Retrieve all happiness index records from the database
-        happiness_indexes = HappinessIndex.objects.all()
-
-        # If no records are found, return a message
-        if not happiness_indexes:
-            return Response({"message": "No happiness index records found."}, status=status.HTTP_404_NOT_FOUND)
->>>>>>> c0078907c1c4c6860ed7bd4c3796e778ae7daeaa
 
         # Serialize the happiness indexes
         serializer = HappinessIndexSerializer(happiness_indexes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-<<<<<<< HEAD
 
     except User.DoesNotExist:
         return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -1414,9 +1358,3 @@ class HappinessIndexListView(generics.ListAPIView):
                 {"message": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-=======
-    
-    except Exception as e:
-        return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
->>>>>>> c0078907c1c4c6860ed7bd4c3796e778ae7daeaa
