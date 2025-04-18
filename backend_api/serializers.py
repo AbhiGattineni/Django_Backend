@@ -193,6 +193,7 @@ class StatusUpdatesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class HappinessIndexSerializer(serializers.ModelSerializer):
+<<<<<<< HEAD
     full_name = serializers.SerializerMethodField()
 
     class Meta:
@@ -201,3 +202,11 @@ class HappinessIndexSerializer(serializers.ModelSerializer):
 
     def get_full_name(self, obj):
         return obj.employee.full_name 
+<<<<<<< HEAD
+=======
+=======
+    class Meta:
+        model = HappinessIndex
+        fields = ['employee', 'happiness_score', 'description', 'date']
+>>>>>>> c007890 (happines index)
+>>>>>>> 28174ba (happines index)
