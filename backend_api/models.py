@@ -361,3 +361,18 @@ class DeviceAllocation(models.Model):
     
     def __str__(self):
         return f"{self.device_name}" 
+
+from django.utils import timezone
+
+class HappinessIndex(models.Model):
+    employee = models.ForeignKey(User, on_delete=models.CASCADE)  # Reference Employee model
+    happiness_score = models.IntegerField(blank=False)
+    description = models.TextField(blank=True, null=True)
+    date = models.DateField(default=timezone.now, unique_for_date="employee")
+
+    class Meta:
+        db_table = 'happiness_index'
+        unique_together = ('employee', 'date')
+
+    def __str__(self):
+        return f"Employee {self.employee.id} - Score {self.happiness_score} on {self.date}"
