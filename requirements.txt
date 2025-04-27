@@ -14,7 +14,7 @@ Faker==13.13.0
 filelock==3.12.0
 idna==3.3
 mysqlclient==2.2.0
-Pillow==9.1.1
+Pillow==9.2.0
 pipenv==2023.4.29
 platformdirs==3.5.1
 psycopg==3.0.15
@@ -35,3 +35,5 @@ tzdata==2022.1
 urllib3==1.26.9
 virtualenv==20.23.0
 virtualenv-clone==0.5.7
+PyMuPDF==1.21.1
+python-docx==1.1.2
