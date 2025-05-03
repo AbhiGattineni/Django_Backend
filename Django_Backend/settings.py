@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'backend_api',
     'transaction_api',
     'corsheaders',
+    'ml_api',
 ]
 
 MIDDLEWARE = [
@@ -73,6 +74,7 @@ CORS_ALLOW_METHODS = [
 
 CORS_ORIGIN_WHITELIST = (
     "https://www.anddhengroup.com",
+    "http://localhost:3001",
 )
 
 ROOT_URLCONF = 'Django_Backend.urls'

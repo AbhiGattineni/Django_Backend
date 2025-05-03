@@ -9,4 +9,5 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('', include('backend_api.urls')),
     path('', include('transaction_api.urls')),
+    path('api/', include('ml_api.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
