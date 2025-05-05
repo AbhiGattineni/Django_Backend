@@ -78,7 +78,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = (
     "https://www.anddhengroup.com",
-    "http://localhost:3000"
 )
 
 ROOT_URLCONF = 'Django_Backend.urls'
