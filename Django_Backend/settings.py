@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'transaction_api',
     'corsheaders',
     'ml_api',
+    'finance_agent',
 ]
 
 MIDDLEWARE = [
@@ -72,9 +73,13 @@ CORS_ALLOW_METHODS = [
     "DELETE",
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True  # Only for development
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ORIGIN_WHITELIST = (
     "https://www.anddhengroup.com",
-    "http://localhost:3001",
+    "http://localhost:3000",
+    "http://localhost:8000",
 )
 
 ROOT_URLCONF = 'Django_Backend.urls'
