@@ -6,6 +6,7 @@ from rest_framework.parsers import MultiPartParser
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .services.parser import parse_transactions
+from .services.categorizer import TransactionCategorizer
 
 @method_decorator(csrf_exempt, name='dispatch')
 class UploadStatementView(APIView):
@@ -27,6 +28,10 @@ class UploadStatementView(APIView):
             if not transactions:
                 return Response({'error': 'No valid transactions found in the file.'}, status=status.HTTP_400_BAD_REQUEST)
 
+            # Categorize transactions
+            categorizer = TransactionCategorizer()
+            categorized_transactions = categorizer.categorize_transactions(transactions)
+
             # Optional: store transactions if user selected "persist"
             if persist:
                 # TODO: Save to DB in future phase
@@ -34,9 +39,9 @@ class UploadStatementView(APIView):
 
             return Response({
                 'message': 'Parsed successfully',
-                'count': len(transactions),
-                'sample': transactions,  # show sample
-                'file_type': file_type
+                'count': len(categorized_transactions),
+                'file_type': file_type,
+                'transactions': categorized_transactions
             })
         except Exception as e:
             return Response({'error': f'Error processing file: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
