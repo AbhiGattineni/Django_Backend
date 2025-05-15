@@ -33,6 +33,9 @@ from rest_framework.generics import get_object_or_404
 from .models import Employer, Recruiter, StatusConsultant, Consultant,DeviceAllocation
 from .serializers import EmployerSerializer, RecruiterSerializer, StatusConsultantSerializer,StatusUpdatesSerializer,HappinessIndexSerializer
 
+import fitz  # PyMuPDF
+import docx
+
 logger = logging.getLogger(__name__)
 
 from .models import TeamMember,HappinessIndex
@@ -1378,3 +1381,27 @@ class HappinessIndexListView(generics.ListAPIView):
                 {"message": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+def extract_text_from_pdf(file):
+    doc = fitz.open(stream=file.read(), filetype="pdf")
+    return " ".join([page.get_text() for page in doc])
+
+def extract_text_from_docx(file):
+    doc = docx.Document(file)
+    return "\n".join([para.text for para in doc.paragraphs])
+
+@api_view(['POST'])
+def parse_resume(request):
+    file = request.FILES.get('resume')
+
+    if not file:
+        return Response({'error': 'No file uploaded'}, status=400)
+
+    if file.name.endswith('.pdf'):
+        text = extract_text_from_pdf(file)
+    elif file.name.endswith('.docx'):
+        text = extract_text_from_docx(file)
+    else:
+        return Response({'error': 'Unsupported file format'}, status=400)
+
+    return Response(text)

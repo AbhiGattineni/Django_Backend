@@ -109,4 +109,5 @@ urlpatterns = [
     path('happiness/', HappinessIndexListView.as_view(), name='happiness-index-list'),
     path('happiness-index/', views.get_all_happiness_indexes, name='get_all_happiness_indexes'),
 
+    path('api/parse-resume/', views.parse_resume, name='parse_resume'),
 ]
