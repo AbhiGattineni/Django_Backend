@@ -37,3 +37,4 @@ virtualenv==20.23.0
 virtualenv-clone==0.5.7
 PyPDF2==3.0.1
 joblib==1.4.0
+pandas==1.5.3
