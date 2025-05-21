@@ -36,3 +36,4 @@ urllib3==1.26.9
 virtualenv==20.23.0
 virtualenv-clone==0.5.7
 PyPDF2==3.0.1
+joblib==1.4.0
