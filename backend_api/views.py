@@ -1,6 +1,6 @@
 import json
 import logging
-
+import os
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
@@ -1378,3 +1378,26 @@ class HappinessIndexListView(generics.ListAPIView):
                 {"message": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+@csrf_exempt
+def get_default_words(request):
+    # Path to your JSON file
+    JSON_FILE_PATH = os.path.join(os.path.dirname(__file__), 'defaultWords.json')
+    if request.method == 'GET':
+        with open(JSON_FILE_PATH, 'r') as f:
+            data = json.load(f)
+        return JsonResponse(data, safe=False)
+
+    elif request.method in ['POST', 'PUT']:
+        try:
+            data = json.loads(request.body)
+            with open(JSON_FILE_PATH, 'w') as f:
+                json.dump(data, f, indent=2)
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return Response(
+                {"message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    else:
+        return Response({"message":"Only GET and POST/PUT allowed"})
