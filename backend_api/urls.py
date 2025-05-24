@@ -15,7 +15,7 @@ from .views import (
 )
 
 from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, DeleteRoleView
-
+from .views import get_default_words
 from backend_api.views import acsParttimerStatus_detail, acsParttimerStatus_update, acsParttimerStatus_create, acsParttimerStatus_delete, application_list, application_detail_by_id_and_date
 from .views import create_college, get_college, update_college, delete_college, get_all_colleges,user_data_and_roles_view, assign_role, create_part_timer, get_status_by_id, health_check
 from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView, DeleteUserAccessRoleView, PackageListCreateView, PackageDetailView
@@ -110,4 +110,6 @@ urlpatterns = [
     path('happiness-index/', views.get_all_happiness_indexes, name='get_all_happiness_indexes'),
 
     path('api/parse-resume/', views.parse_resume, name='parse_resume'),
+    path('api/default-words/', get_default_words, name='default-words'),
+
 ]
