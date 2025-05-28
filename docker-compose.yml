@@ -19,7 +19,7 @@ services:
       - DB_PORT=${DB_PORT}
 
   db:
-    image: mysql
+    image: mysql:8
     ports:
       - "3306:3306"
     environment:
