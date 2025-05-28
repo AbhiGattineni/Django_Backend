@@ -13,7 +13,8 @@ from sklearn.linear_model import LinearRegression
 MODEL_PATH = os.path.join(settings.BASE_DIR, 'ml_api', 'house_price_model.pkl')
 
 # Load model once at the top level
-model = joblib.load(MODEL_PATH)
+# model = joblib.load(MODEL_PATH)
+model = None  # temporarily disable loading
 
 @csrf_exempt
 def predict_house_price(request):
