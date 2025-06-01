@@ -12,7 +12,7 @@ def calculate_spending_summary(transactions):
     return dict(sorted(summary.items(), key=lambda x: x[1], reverse=True))
 
 
-def get_card_recommendation(spending_summary):
+def get_card_recommendation(spending_summary, current_cards=None):
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     formatted_summary = "\n".join([
@@ -20,8 +20,12 @@ def get_card_recommendation(spending_summary):
         for category, amount in spending_summary.items()
     ])
 
+    current_cards_text = ""
+    if current_cards:
+        current_cards_text = f"\nCurrent cards owned:\n" + "\n".join([f"- {card}" for card in current_cards])
+    
     prompt = f"""Based on this monthly spending pattern:
-{formatted_summary}
+{formatted_summary}{current_cards_text}
 
 Analyze the spending and return **strictly valid JSON** in the following format:
 {{
@@ -56,14 +60,18 @@ Analyze the spending and return **strictly valid JSON** in the following format:
   }}
 }}
 
-Respond ONLY with valid JSON, no explanation, no markdown, no commentary.
+Important instructions:
+1. Only suggest cards to avoid from the current card list provided above
+2. If no current cards are provided, return an empty array for cards_to_avoid
+3. Do not make generic card avoidance suggestions
+4. Respond ONLY with valid JSON, no explanation, no markdown, no commentary
 """
 
     try:
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a credit card expert. Only respond with JSON data. Do not include any markdown or free text."},
+                {"role": "system", "content": "You are a credit card expert. Only respond with JSON data. Do not include any markdown or free text. Only suggest avoiding cards that are explicitly listed in the user's current cards."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.4,

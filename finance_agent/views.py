@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from .services.parser import parse_transactions
 from .services.categorizer import TransactionCategorizer
 from .services.card_recommender import calculate_spending_summary, get_card_recommendation
+from .services.card_extractor import get_current_cards
 
 @method_decorator(csrf_exempt, name='dispatch')
 class UploadStatementView(APIView):
@@ -65,8 +66,10 @@ class UploadStatementView(APIView):
                 })
 
         # Calculate spending summary and get card recommendations
+        print(all_transactions)
         spending_summary = calculate_spending_summary(all_transactions)
-        card_suggestions = get_card_recommendation(spending_summary)
+        current_cards = get_current_cards(all_transactions)  # Extract cards from transactions
+        card_suggestions = get_card_recommendation(spending_summary, current_cards)
 
         # Optional: store transactions if user selected "persist"
         if persist and all_transactions:
@@ -79,6 +82,7 @@ class UploadStatementView(APIView):
             'file_results': file_results,
             'transactions': all_transactions,
             'spending_summary': spending_summary,
+            'current_cards': current_cards,  # Include detected cards in response
             'card_suggestions': card_suggestions
         })
 
