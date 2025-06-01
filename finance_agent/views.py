@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .services.parser import parse_transactions
 from .services.categorizer import TransactionCategorizer
+from .services.card_recommender import calculate_spending_summary, get_card_recommendation
 
 @method_decorator(csrf_exempt, name='dispatch')
 class UploadStatementView(APIView):
@@ -63,6 +64,10 @@ class UploadStatementView(APIView):
                     'error': str(e)
                 })
 
+        # Calculate spending summary and get card recommendations
+        spending_summary = calculate_spending_summary(all_transactions)
+        card_suggestions = get_card_recommendation(spending_summary)
+
         # Optional: store transactions if user selected "persist"
         if persist and all_transactions:
             # TODO: Save to DB in future phase
@@ -72,7 +77,9 @@ class UploadStatementView(APIView):
             'message': 'Processing completed',
             'total_count': len(all_transactions),
             'file_results': file_results,
-            'transactions': all_transactions
+            'transactions': all_transactions,
+            'spending_summary': spending_summary,
+            'card_suggestions': card_suggestions
         })
 
 

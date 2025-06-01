@@ -69,8 +69,7 @@ toml==0.10.2
 toposort==1.7
 tqdm==4.67.1
 typing-inspection==0.4.0
-typing_extensions==4.9.0
-tzdata==2022.1
+
 tzlocal==5.3.1
 urllib3==1.26.9
 virtualenv==20.23.0
