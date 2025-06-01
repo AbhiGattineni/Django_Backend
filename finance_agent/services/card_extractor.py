@@ -1,72 +1,109 @@
 import re
 from typing import List, Dict
+import PyPDF2
+import io
+import os
+from openai import OpenAI
 
-def extract_card_info(text: str) -> List[Dict]:
+def extract_text_from_pdf(pdf_file) -> str:
     """
-    Extract credit card information from statement text.
-    Returns a list of dictionaries containing card details.
+    Extract text from a PDF file.
     """
-    cards = []
-    
-    # Common card patterns
-    card_patterns = [
-        # Chase patterns
-        r'(Chase\s+(?:Freedom|Sapphire|Slate|Ink|Amazon|Disney|United|Southwest|Marriott|Hyatt|IHG|British\s+Airways|Aeroplan|World\s+of\s+Hilton|IHG\s+One|World\s+Elite\s+Mastercard|Freedom\s+Unlimited|Freedom\s+Flex|Slate\s+Edge|Ink\s+Business\s+(?:Preferred|Unlimited|Cash|Plus)))',
-        # Amex patterns
-        r'(American\s+Express\s+(?:Gold|Platinum|Green|Blue|EveryDay|Hilton|Delta|Marriott|Business\s+(?:Gold|Platinum|Green|Blue|EveryDay)))',
-        # Citi patterns
-        r'(Citi\s+(?:Double\s+Cash|Custom\s+Cash|Premier|Rewards\+|Diamond\s+Preferred|Simplicity|Costco))',
-        # Capital One patterns
-        r'(Capital\s+One\s+(?:Savor|SavorOne|Venture|VentureOne|Quicksilver|Spark))',
-        # Discover patterns
-        r'(Discover\s+(?:it|Miles|More|Student|Business))',
-        # Bank of America patterns
-        r'(Bank\s+of\s+America\s+(?:Customized\s+Cash|Travel\s+Rewards|Premium\s+Rewards|Business\s+Advantage))',
-        # Generic patterns for other cards
-        r'((?:Mastercard|Visa|American\s+Express)\s+(?:Platinum|Gold|Signature|Infinite|World\s+Elite))'
-    ]
-    
-    # Combine all patterns
-    combined_pattern = '|'.join(f'({pattern})' for pattern in card_patterns)
-    
-    # Find all matches
-    matches = re.finditer(combined_pattern, text, re.IGNORECASE)
-    
-    # Process matches
-    for match in matches:
-        card_name = match.group(0).strip()
-        if card_name and card_name not in [card['name'] for card in cards]:
-            cards.append({
-                'name': card_name,
-                'type': 'credit',  # Default to credit card
-                'confidence': 'high' if any(brand in card_name.lower() for brand in ['chase', 'amex', 'citi', 'capital one']) else 'medium'
-            })
-    
-    return cards
+    try:
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        for page in pdf_reader.pages:
+            extracted = page.extract_text()
+            if extracted:
+                text += extracted
+        return text
+    except Exception as e:
+        print(f"Error extracting text from PDF: {str(e)}")
+        return ""
 
-def get_current_cards(transactions: List[Dict]) -> List[str]:
+def chunk_text(text: str, max_chunk_size: int = 4000) -> List[str]:
     """
-    Extract current credit cards from transaction data and statement text.
+    Split text into chunks of approximately max_chunk_size characters,
+    trying to break at sentence boundaries.
+    """
+    if len(text) <= max_chunk_size:
+        return [text]
+    
+    chunks = []
+    current_chunk = ""
+    
+    # Split into sentences
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    
+    for sentence in sentences:
+        if len(current_chunk) + len(sentence) <= max_chunk_size:
+            current_chunk += sentence + " "
+        else:
+            if current_chunk:
+                chunks.append(current_chunk.strip())
+            current_chunk = sentence + " "
+    
+    if current_chunk:
+        chunks.append(current_chunk.strip())
+    
+    return chunks
+
+def extract_card_info_from_gpt(text: str) -> List[str]:
+    """
+    Use ChatGPT to extract credit card names from text.
+    Returns a list of card names.
+    """
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    
+    # Split text into chunks if it's too long
+    chunks = chunk_text(text)
+    all_cards = set()
+    
+    for chunk in chunks:
+        prompt = f"""Extract all credit card names from this statement text. Return ONLY a JSON array of card names, nothing else.
+Example response format: ["American Express Platinum Card", "Chase Sapphire Preferred"]
+
+Statement text:
+{chunk}"""
+
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are a credit card statement analyzer. Extract credit card names and return them as a JSON array. Only return the JSON array, no other text."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.1,
+                max_tokens=150
+            )
+            
+            # Parse the response as JSON
+            import json
+            card_names = json.loads(response.choices[0].message.content.strip())
+            all_cards.update(card_names)
+            
+        except Exception as e:
+            print(f"Error getting card names from GPT for chunk: {str(e)}")
+            continue
+    
+    return list(all_cards)
+
+def get_current_cards(transactions: List[Dict], pdf_files: List = None) -> List[str]:
+    """
+    Extract current credit cards from PDF statements using GPT.
     Returns a list of unique card names.
     """
-    # Get unique card names from transactions
     card_names = set()
     
-    # First, get cards from transaction data
-    for txn in transactions:
-        card = txn.get('card', '')
-        if card and card != 'PDF Import':  # Skip generic PDF import entries
-            card_names.add(card)
-    
-    # Then, try to extract cards from statement text if available
-    for txn in transactions:
-        # Look for card info in description/merchant fields
-        description = txn.get('description', '') or txn.get('merchant', '')
-        if description:
-            extracted_cards = extract_card_info(description)
-            for card in extracted_cards:
-                if card['confidence'] == 'high':  # Only add high confidence matches
-                    card_names.add(card['name'])
+    if pdf_files:
+        for pdf_file in pdf_files:
+            text = extract_text_from_pdf(pdf_file)
+
+            if text:
+                # Use GPT to extract card names
+                extracted_cards = extract_card_info_from_gpt(text)
+                card_names.update(extracted_cards)
+                print(extracted_cards)
     
     # Clean up card names
     cleaned_cards = []
@@ -78,4 +115,4 @@ def get_current_cards(transactions: List[Dict]) -> List[str]:
         card = re.sub(r'\s+\*\*\*\*\d{4}$', '', card)
         cleaned_cards.append(card.strip())
     
-    return list(set(cleaned_cards))  # Remove any duplicates after cleaning 
+    return list(set(cleaned_cards))

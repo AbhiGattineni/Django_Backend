@@ -23,6 +23,7 @@ class UploadStatementView(APIView):
 
         all_transactions = []
         file_results = []
+        pdf_files = []
 
         for file in files:
             if not file.name.endswith(('.csv', '.pdf')):
@@ -35,6 +36,11 @@ class UploadStatementView(APIView):
 
             try:
                 file_type = 'pdf' if file.name.endswith('.pdf') else 'csv'
+                
+                # Store PDF files for card extraction
+                if file_type == 'pdf':
+                    pdf_files.append(file)
+                
                 transactions = parse_transactions(file, file_type)
                 
                 if not transactions:
@@ -66,9 +72,8 @@ class UploadStatementView(APIView):
                 })
 
         # Calculate spending summary and get card recommendations
-        print(all_transactions)
         spending_summary = calculate_spending_summary(all_transactions)
-        current_cards = get_current_cards(all_transactions)  # Extract cards from transactions
+        current_cards = get_current_cards(all_transactions, pdf_files)  # Pass PDF files for card extraction
         card_suggestions = get_card_recommendation(spending_summary, current_cards)
 
         # Optional: store transactions if user selected "persist"
