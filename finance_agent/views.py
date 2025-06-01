@@ -13,37 +13,66 @@ class UploadStatementView(APIView):
     parser_classes = (MultiPartParser,)
 
     def post(self, request):
-        file = request.FILES.get('statement')
+        files = request.FILES.getlist('statement')
         persist = request.data.get('persist', False)
-        file_type = request.data.get('file_type', 'csv')
 
-        if not file:
-            return Response({'error': 'No file uploaded.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not files:
+            return Response({'error': 'No files uploaded.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not file.name.endswith(('.csv', '.pdf')):
-            return Response({'error': 'Only CSV and PDF files are allowed.'}, status=status.HTTP_400_BAD_REQUEST)
+        all_transactions = []
+        file_results = []
 
-        try:
-            transactions = parse_transactions(file, file_type)
-            if not transactions:
-                return Response({'error': 'No valid transactions found in the file.'}, status=status.HTTP_400_BAD_REQUEST)
+        for file in files:
+            if not file.name.endswith(('.csv', '.pdf')):
+                file_results.append({
+                    'filename': file.name,
+                    'status': 'error',
+                    'error': 'Only CSV and PDF files are allowed.'
+                })
+                continue
 
-            # Categorize transactions
-            categorizer = TransactionCategorizer()
-            categorized_transactions = categorizer.categorize_transactions(transactions)
+            try:
+                file_type = 'pdf' if file.name.endswith('.pdf') else 'csv'
+                transactions = parse_transactions(file, file_type)
+                
+                if not transactions:
+                    file_results.append({
+                        'filename': file.name,
+                        'status': 'error',
+                        'error': 'No valid transactions found in the file.'
+                    })
+                    continue
 
-            # Optional: store transactions if user selected "persist"
-            if persist:
-                # TODO: Save to DB in future phase
-                pass
+                # Categorize transactions
+                categorizer = TransactionCategorizer()
+                categorized_transactions = categorizer.categorize_transactions(transactions)
+                
+                all_transactions.extend(categorized_transactions)
+                
+                file_results.append({
+                    'filename': file.name,
+                    'status': 'success',
+                    'count': len(categorized_transactions),
+                    'file_type': file_type
+                })
 
-            return Response({
-                'message': 'Parsed successfully',
-                'count': len(categorized_transactions),
-                'file_type': file_type,
-                'transactions': categorized_transactions
-            })
-        except Exception as e:
-            return Response({'error': f'Error processing file: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                file_results.append({
+                    'filename': file.name,
+                    'status': 'error',
+                    'error': str(e)
+                })
+
+        # Optional: store transactions if user selected "persist"
+        if persist and all_transactions:
+            # TODO: Save to DB in future phase
+            pass
+
+        return Response({
+            'message': 'Processing completed',
+            'total_count': len(all_transactions),
+            'file_results': file_results,
+            'transactions': all_transactions
+        })
 
 
