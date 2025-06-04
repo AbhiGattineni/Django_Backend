@@ -30,7 +30,6 @@ joblib==1.5.0
 Js2Py==0.74
 lxml==5.4.0
 mysqlclient==2.2.7
-numpy==2.2.5
 openai==1.78.1
 packaging==25.0
 pandas==2.2.3
