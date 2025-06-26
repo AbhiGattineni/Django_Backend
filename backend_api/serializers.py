@@ -14,6 +14,7 @@ from .models import CollegeDetail, ShopingProduct
 from .models import StatusConsultant, Employer, Recruiter, Consultant
 from .models import DeviceAllocation
 from .models import HappinessIndex
+from .models import Subsidiary
 import json
 from django.utils import timezone
 
@@ -202,3 +203,8 @@ class HappinessIndexSerializer(serializers.ModelSerializer):
 
     def get_full_name(self, obj):
         return obj.employee.full_name 
+
+class SubsidiarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subsidiary
+        fields = '__all__' 

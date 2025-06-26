@@ -112,4 +112,10 @@ urlpatterns = [
     path('api/parse-resume/', views.parse_resume, name='parse_resume'),
     path('api/default-words/', get_default_words, name='default-words'),
 
+    path('subsidiaries/', views.get_all_subsidiaries, name='get_all_subsidiaries'),
+    path('subsidiaries/<int:pk>/', views.get_single_subsidiary, name='get_single_subsidiary'),
+    path('subsidiaries/add/', views.add_subsidiary, name='add_subsidiary'),
+    path('subsidiaries/update/<int:pk>/', views.update_subsidiary, name='update_subsidiary'),
+    path('subsidiaries/delete/<int:pk>/', views.delete_subsidiary, name='delete_subsidiary'),
+
 ]
