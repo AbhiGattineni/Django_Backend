@@ -816,7 +816,7 @@ def create_status(request):
                     date=data["date"],
                     description=data.get("description", None),
                     studentName=data.get("studentName", None),
-                    studentId=data.get("studentId", None),
+                    whatsappId=data.get("whatsappId", None),
                     applicationsAppliedSearched=data.get("applicationsAppliedSearched", 0),
                     applicationsAppliedSaved=data.get("applicationsAppliedSaved", 0),
                     easyApply=data.get("easyApply", 0),
@@ -1225,38 +1225,6 @@ def delete_device(request, pk):
     except DeviceAllocation.DoesNotExist:
         return Response({"error": "Device allocation not found"}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET'])
-@csrf_exempt
-def get_status_by_id(request, user_id):
-    if request.method == 'GET':
-        try:
-            status_queryset = StatusUpdates.objects.filter(user_id=user_id)
-            status_data = list(status_queryset.values())
-            
-            # Use timezone-aware date
-            today = timezone.now().date()
-            has_submitted = HappinessIndex.objects.filter(
-                employee_id=user_id, 
-                date=today
-            ).exists()
-            
-            response_data = {
-                'status_updates': status_data,
-                'has_submitted_happiness_today': has_submitted
-            }
-            
-            return JsonResponse(response_data)
-            
-        except Exception as e:
-            return JsonResponse(
-                {'message': 'Error processing request: ' + str(e)}, 
-                status=500
-            )
-    else:
-        return JsonResponse(
-            {'message': 'Invalid request method'}, 
-            status=405
-        )
 @api_view(['GET'])
 @csrf_exempt
 def get_status_by_id(request, user_id):
