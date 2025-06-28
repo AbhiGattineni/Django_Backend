@@ -282,7 +282,7 @@ class StatusUpdates(models.Model):
     date = models.DateField(blank=False, validators=[MaxValueValidator(current_date)], default=timezone.localdate)
     description = models.CharField(max_length=500, blank=True, null=True)
     studentName = models.CharField(max_length=100, blank=True, null=True)
-    studentId = models.CharField(max_length=100, blank=True, null=True)
+    whatsappId = models.CharField(max_length=100, blank=True, null=True)
     applicationsAppliedSearched = models.IntegerField(default=0, blank=True, null=True)
     applicationsAppliedSaved = models.IntegerField(default=0, blank=True, null=True)
     easyApply = models.IntegerField(default=0, blank=True, null=True)
