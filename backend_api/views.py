@@ -25,9 +25,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 
-from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role, PartTimer, Package, ShopingProduct
+from .models import Todo, Person, AccessRoles, CollegesList, Consultant, User, Role, PartTimer, Package, ShopingProduct, Subsidiary
 from .serializers import StatusUpdatesSerializer, TodoSerializer, PersonSerializer, CollegesListSerializer, ConsultantSerializer, UserSerializer, AccessRolesSerializer, RoleSerializer, PartTimerSerializer, PackageSerializer, ShopingProductSerializer,DeviceAllocationSerializer
-
+from .serializers import SubsidiarySerializer
 
 from rest_framework.generics import get_object_or_404
 from .models import Employer, Recruiter, StatusConsultant, Consultant,DeviceAllocation
@@ -1427,3 +1427,47 @@ def get_default_words(request):
             )
     else:
         return Response({"message":"Only GET and POST/PUT allowed"})
+
+@api_view(['GET'])
+def get_all_subsidiaries(request):
+    subsidiaries = Subsidiary.objects.all()
+    serializer = SubsidiarySerializer(subsidiaries, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_single_subsidiary(request, pk):
+    try:
+        subsidiary = Subsidiary.objects.get(pk=pk)
+        serializer = SubsidiarySerializer(subsidiary)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Subsidiary.DoesNotExist:
+        return Response({"error": "Subsidiary not found"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+def add_subsidiary(request):
+    serializer = SubsidiarySerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def update_subsidiary(request, pk):
+    try:
+        subsidiary = Subsidiary.objects.get(pk=pk)
+        serializer = SubsidiarySerializer(subsidiary, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Subsidiary.DoesNotExist:
+        return Response({"error": "Subsidiary not found"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+def delete_subsidiary(request, pk):
+    try:
+        subsidiary = Subsidiary.objects.get(pk=pk)
+        subsidiary.delete()
+        return Response({"message": "Subsidiary deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    except Subsidiary.DoesNotExist:
+        return Response({"error": "Subsidiary not found"}, status=status.HTTP_404_NOT_FOUND)

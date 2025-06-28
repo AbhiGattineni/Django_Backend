@@ -376,3 +376,16 @@ class HappinessIndex(models.Model):
 
     def __str__(self):
         return f"Employee {self.employee.id} - Score {self.happiness_score} on {self.date}"
+
+class Subsidiary(models.Model):
+    id = models.AutoField(primary_key=True)
+    subsidiaryName = models.CharField(max_length=255)
+    subName = models.CharField(max_length=255)
+    parttimer_multi_status = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'subsidiary'
+
+    def __str__(self):
+        return self.subsidiaryName
