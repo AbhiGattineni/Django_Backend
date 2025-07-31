@@ -900,7 +900,8 @@ def update_status_by_id(request):
             data = request.data
             existing_application = StatusUpdates.objects.filter(
                 user_id=data.get("user_id"),
-                date=data.get("date")
+                date=data.get("date"),
+                subsidary=data.get("subsidary")
             ).first()
             
             if existing_application:
