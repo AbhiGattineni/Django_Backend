@@ -769,6 +769,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from .models import StatusUpdates
+from datetime import datetime, timedelta
 
 @api_view(['POST'])
 @csrf_exempt
@@ -807,13 +808,27 @@ def create_status(request):
                     except User.DoesNotExist:
                         return JsonResponse({"message": "User not found for the given user_id"}, status=400)
 
-                # Create a new status record
-                StatusUpdates.objects.create(
-                    user_id=user_id,
-                    user_name=user_name,
-                    subsidary=data["subsidary"],
-                    source=data.get("source", None),
-                    date=data["date"],
+                # Handle multiple dates if this is a leave request
+                dates_to_create = []
+                start_date = datetime.strptime(data["date"], "%Y-%m-%d").date()
+                
+                if data.get("leave") and data.get("endDate"):
+                    end_date = datetime.strptime(data["endDate"], "%Y-%m-%d").date()
+                    current_date = start_date
+                    while current_date <= end_date:
+                        dates_to_create.append(current_date)
+                        current_date += timedelta(days=1)
+                else:
+                    dates_to_create = [start_date]
+
+                # Create status records for all dates
+                for status_date in dates_to_create:
+                    StatusUpdates.objects.create(
+                        user_id=user_id,
+                        user_name=user_name,
+                        subsidary=data["subsidary"],
+                        source=data.get("source", None),
+                        date=status_date,
                     description=data.get("description", None),
                     studentName=data.get("studentName", None),
                     whatsappId=data.get("whatsappId", None),
@@ -840,7 +855,10 @@ def create_status(request):
                     leave=data.get("leave", None)
                 )
                 
-                return JsonResponse({"message": "Status saved successfully"}, status=201)
+                # Return success message with number of dates created
+                num_dates = len(dates_to_create)
+                message = f"Status{'es' if num_dates > 1 else ''} saved successfully for {num_dates} day{'s' if num_dates > 1 else ''}"
+                return JsonResponse({"message": message}, status=201)
             
             except KeyError as e:
                 field = e.args[0]
