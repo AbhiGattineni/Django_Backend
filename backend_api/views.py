@@ -1234,6 +1234,21 @@ def get_status_by_id(request, user_id):
             status_queryset = StatusUpdates.objects.filter(user_id=user_id)
             status_data = list(status_queryset.values())
 
+            # Fetch user_name from Users table if missing
+            user_name = ''
+            if status_data:
+                # Try to get user_name from status_data if present
+                user_name = status_data[0].get('user_name', '')
+            if not user_name:
+                # Try to fetch from Users table
+                try:
+                    from .models import User  # Adjust import if needed
+                    user_obj = User.objects.filter(user_id=user_id).first()
+                    if user_obj:
+                        user_name = getattr(user_obj, 'full_name', '')
+                except Exception:
+                    user_name = ''
+
             # Use timezone-aware date
             today = timezone.now().date()
             has_submitted = HappinessIndex.objects.filter(
@@ -1243,7 +1258,8 @@ def get_status_by_id(request, user_id):
 
             response_data = {
                 'status_updates': status_data,
-                'has_submitted_happiness_today': has_submitted
+                'has_submitted_happiness_today': has_submitted,
+                'user_name': user_name
             }
 
             return JsonResponse(response_data)
