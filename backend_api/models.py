@@ -39,7 +39,7 @@ class PartTimer(models.Model):
         db_table = 'PartTimer'
 
     def __str__(self):
-        return f"{self.user.full_name} - {self.current_occupation}"
+        return f"{self.user} - {self.current_occupation}"  # user is CharField, not ForeignKey
 
 
 class Role(models.Model):
@@ -367,7 +367,7 @@ class HappinessIndex(models.Model):
     employee = models.ForeignKey(User, on_delete=models.CASCADE)  # Reference Employee model
     happiness_score = models.IntegerField(blank=False)
     description = models.TextField(blank=True, null=True)
-    date = models.DateField(default=timezone.now, unique_for_date="employee")
+    date = models.DateField(default=timezone.now)  # unique_for_date is deprecated, using unique_together instead
 
     class Meta:
         db_table = 'happiness_index'
