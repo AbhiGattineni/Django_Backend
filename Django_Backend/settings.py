@@ -45,8 +45,6 @@ INSTALLED_APPS = [
     'backend_api',
     'transaction_api',
     'corsheaders',
-    'ml_api',
-    'finance_agent',
 ]
 
 MIDDLEWARE = [

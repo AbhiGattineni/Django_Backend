@@ -10,8 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='user',
-            unique_together={('user_id',)},
-        ),
+        # Empty - user_id is already primary key (unique), 
+        # so unique_together is redundant and causes duplicate constraint error
     ]

@@ -2,13 +2,22 @@ version: "3.4"
 services:
   web:
     build: .
-    command: bash -c "python manage.py migrate && python manage.py runserver  0.0.0.0:8000"
+    command: >
+      bash -c "
+      echo 'Waiting for database...' &&
+      until python manage.py shell -c 'from django.db import connection; connection.ensure_connection()' 2>/dev/null; do
+        echo 'Database not ready, waiting...' &&
+        sleep 2
+      done &&
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000
+      "
     ports:
       - "8000:8000"
     depends_on:
       - db
     volumes:
-      - .:/app
+      - .:/DJANGO_BACKEND
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - MYSQL_DB=${MYSQL_DB}
@@ -31,5 +40,10 @@ services:
       - DB_PORT=${DB_PORT} 
     volumes:
       - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 volumes:
   mysql-data:

@@ -229,8 +229,7 @@ class User(models.Model):
 
     class Meta:
         db_table = 'User'
-        # Specify that 'user_id' is the primary key
-        unique_together = (("user_id",),)
+        # user_id is already primary key, so unique_together is redundant
 
     def __str__(self):
         return self.user_id
