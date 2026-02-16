@@ -121,7 +121,7 @@ class Command(BaseCommand):
                 first_name=first,
                 last_name=last,
                 phone_country_code='+1',
-                phone_number=f'{random.randint(100,999)}-{random.randint(100,999)}-{random.randint(1000,9999)}',
+                phone_number=f'{random.randint(2000000000, 9999999999)}',  # 10 digits only (no dashes)
                 email_id=email,
                 enrolled_services=['service1', 'service2'] if i % 2 == 0 else ['service3']
             ))
@@ -470,6 +470,18 @@ class Command(BaseCommand):
                 reason='Working on applications' if i % 4 == 0 else None,
                 ticket_link=f'https://ticket-system.com/ticket/{i+1}' if i % 5 == 0 else None,
                 github_link=f'https://github.com/user{i+1}/project' if i % 6 == 0 else None,
+                account_name=f'Account {i+1}' if i % 7 == 0 else None,
+                stock_name=f'STOCK{i+1}' if i % 8 == 0 else None,
+                stock_quantity=random.randint(10, 1000) if i % 8 == 0 else None,
+                stock_value=Decimal(f'{random.randint(10, 1000)}.{random.randint(10, 99)}') if i % 8 == 0 else None,
+                transaction_type=random.choice(['buy', 'sell']) if i % 8 == 0 else None,
+                total_current_amount=Decimal(f'{random.randint(1000, 50000)}.{random.randint(10, 99)}') if i % 9 == 0 else None,
+                pickup_location=f'{random.randint(1, 999)} Main St, City {i+1}' if i % 10 == 0 else None,
+                pickup_contact=f'{random.randint(200,999)}{random.randint(100,999)}{random.randint(1000,9999)}' if i % 10 == 0 else None,
+                dropoff_location=f'{random.randint(1, 999)} Oak Ave, City {i+1}' if i % 10 == 0 else None,
+                dropoff_contact=f'{random.randint(200,999)}{random.randint(100,999)}{random.randint(1000,9999)}' if i % 10 == 0 else None,
+                distance_travelled=Decimal(f'{random.randint(1, 100)}.{random.randint(10, 99)}') if i % 10 == 0 else None,
+                whatsapp_group_number=f'+1{random.randint(2000000000, 9999999999)}' if i % 11 == 0 else None,
                 leave=random.choice([True, False]) if i % 10 == 0 else False
             ))
 
