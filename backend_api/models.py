@@ -12,7 +12,7 @@ class Todo(models.Model):
     timestamp = models.DateTimeField(auto_now_add = True, auto_now = False, blank = True)
     completed = models.BooleanField(default = False, blank = True)
     updated = models.DateTimeField(auto_now = True, blank = True)
-    user = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return self.task
@@ -28,12 +28,12 @@ class Person(models.Model):
         return self.name
 
 class PartTimer(models.Model):
-    user = models.CharField(null=True, blank=True,max_length=100)
+    user = models.CharField(blank=True, max_length=100, default='')
     answered_questions = models.BooleanField(default=False)
     current_occupation = models.CharField(max_length=100)
-    year_of_study = models.CharField(max_length=100, null=True, blank=True)  # Nullable, as it's conditional
-    course_name = models.CharField(max_length=100, null=True, blank=True)  # Nullable
-    referred_by = models.CharField(max_length=100, null=True, blank=True)  # Assuming this could be nullable
+    year_of_study = models.CharField(max_length=100, blank=True, default='')  # Nullable, as it's conditional
+    course_name = models.CharField(max_length=100, blank=True, default='')  # Nullable
+    referred_by = models.CharField(max_length=100, blank=True, default='')  # Assuming this could be nullable
 
     class Meta:
         db_table = 'PartTimer'
@@ -83,16 +83,16 @@ class CollegesList(models.Model):
     spring_deadline_graduation_link = models.URLField(blank=True, null=True)
     college_email = models.EmailField(blank=True, null=True)
     college_email_link = models.URLField(blank=True, null=True)
-    college_phone = models.CharField(max_length=15, blank=True, null=True)
+    college_phone = models.CharField(max_length=15, blank=True, default='')
     college_phone_link = models.URLField(blank=True, null=True)
     international_person_email = models.EmailField(blank=True, null=True)
     international_person_email_link = models.URLField(blank=True, null=True)
-    public_private = models.CharField(max_length=10, choices=[('public', 'Public'), ('private', 'Private')], blank=True, null=True)
+    public_private = models.CharField(max_length=10, choices=[('public', 'Public'), ('private', 'Private')], blank=True, default='')
     UG_courses = models.TextField(blank=True, null=True)
     UG_courses_link = models.URLField(blank=True, null=True)
     graduation_courses = models.TextField(blank=True, null=True)
     graduation_courses_link = models.URLField(blank=True, null=True)
-    state = models.CharField(max_length=255, blank=True, null=True)
+    state = models.CharField(max_length=255, blank=True, default='')
 
     class Meta:
         db_table = 'collegelist'
@@ -167,10 +167,10 @@ class Consultant(models.Model):
     visa_validity_verified = models.BooleanField(default=False)
 
     # Education Details
-    btech_college = models.CharField(max_length=100,blank=True,null=True)
+    btech_college = models.CharField(max_length=100, blank=True, default='')
     btech_percentage = models.DecimalField(max_digits=5, decimal_places=2,blank=True,null=True)
     btech_graduation_date = models.DateField(blank=True,null=True)
-    masters_college = models.CharField(max_length=100,blank=True,null=True)
+    masters_college = models.CharField(max_length=100, blank=True, default='')
     masters_cgpa = models.DecimalField(max_digits=4, decimal_places=2,blank=True,null=True)
     masters_graduation_date = models.DateField(blank=True,null=True)
 
@@ -182,14 +182,14 @@ class Consultant(models.Model):
     experience_in_us_verified = models.BooleanField(default=False)
     experience_in_india = models.TextField()  # To store detailed text
     experience_in_india_verified = models.BooleanField(default=False)
-    relocation_preference = models.TextField(blank=True,null=True)  # Cities and states
+    relocation_preference = models.TextField(blank=True, default='')  # Cities and states
 
     # Personal Details
     passport_number = models.CharField(max_length=50, blank=True)
     passport_number_verified = models.BooleanField(default=False)
     driving_licence = models.CharField(max_length=50, blank=True)
-    rate_expectations = models.CharField(max_length=100,blank=True,null=True)
-    last_4_ssn = models.CharField(max_length=4,blank=True,null=True)
+    rate_expectations = models.CharField(max_length=100, blank=True, default='')
+    last_4_ssn = models.CharField(max_length=4, blank=True, default='')
     linkedin_url = models.URLField(max_length=200, blank=True)
     linkedin_url_verified = models.BooleanField(default=False)
     uploaded_date = models.DateField(default=timezone.localdate)
@@ -209,7 +209,7 @@ class StatusConsultant(models.Model):
     recruiter_id = models.ForeignKey(Recruiter, on_delete=models.CASCADE, default=None)
     employer_id = models.ForeignKey(Employer, on_delete=models.CASCADE, default=None)
     date = models.DateField(default=timezone.localdate,null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(blank=True, default='')
 
     def __str__(self):
         return f'Note on {self.date} is {self.description}'
@@ -219,11 +219,11 @@ class StatusConsultant(models.Model):
 
 class User(models.Model):
     user_id = models.CharField(max_length=100, primary_key=True)
-    full_name = models.CharField(max_length=100, blank=True, null=True)
-    first_name = models.CharField(max_length=100, blank=True, null=True)
-    last_name = models.CharField(max_length=100, blank=True, null=True)
-    phone_country_code = models.CharField(max_length=4, blank=True, null=True)
-    phone_number = models.CharField(max_length=10, blank=True, null=True)
+    full_name = models.CharField(max_length=100, blank=True, default='')
+    first_name = models.CharField(max_length=100, blank=True, default='')
+    last_name = models.CharField(max_length=100, blank=True, default='')
+    phone_country_code = models.CharField(max_length=4, blank=True, default='')
+    phone_number = models.CharField(max_length=10, blank=True, default='')
     email_id = models.EmailField()
     enrolled_services = models.JSONField(blank=True, null=True)
 
@@ -255,10 +255,10 @@ class AcsParttimerStatus(models.Model):
     applicationsAppliedSearched = models.IntegerField(default=0)
     applicationsAppliedSaved = models.IntegerField(default=0)
     easyApply = models.IntegerField(default=0)
-    recruiterDirectMessages = models.CharField(max_length=200, blank=True, null=True)
-    connectMessages = models.CharField(max_length=200, blank=True, null=True)
-    reason = models.CharField(max_length=500, blank=True, null=True)
-    description= models.CharField(max_length=500, blank=True, null=True)
+    recruiterDirectMessages = models.CharField(max_length=200, blank=True, default='')
+    connectMessages = models.CharField(max_length=200, blank=True, default='')
+    reason = models.CharField(max_length=500, blank=True, default='')
+    description = models.CharField(max_length=500, blank=True, default='')
 
     class Meta:
         db_table = 'PartTimer_status'
@@ -277,31 +277,31 @@ class StatusUpdates(models.Model):
     user_id = models.CharField(max_length=100, blank=False)
     user_name = models.CharField(max_length=100, blank=False)
     subsidary = models.CharField(max_length=100, blank=False)
-    source = models.CharField(max_length=200, blank=True, null=True)
+    source = models.CharField(max_length=200, blank=True, default='')
     date = models.DateField(blank=False, validators=[MaxValueValidator(current_date)], default=timezone.localdate)
-    description = models.CharField(max_length=500, blank=True, null=True)
-    studentName = models.CharField(max_length=100, blank=True, null=True)
-    whatsappId = models.CharField(max_length=100, blank=True, null=True)
+    description = models.CharField(max_length=500, blank=True, default='')
+    studentName = models.CharField(max_length=100, blank=True, default='')
+    whatsappId = models.CharField(max_length=100, blank=True, default='')
     applicationsAppliedSearched = models.IntegerField(default=0, blank=True, null=True)
     applicationsAppliedSaved = models.IntegerField(default=0, blank=True, null=True)
     easyApply = models.IntegerField(default=0, blank=True, null=True)
-    recruiterDirectMessages = models.CharField(max_length=200, blank=True, null=True)
-    connectMessages = models.CharField(max_length=200, blank=True, null=True)
-    reason = models.CharField(max_length=500, blank=True, null=True)
-    ticket_link = models.CharField(max_length=100, blank=True, null=True)
-    github_link = models.CharField(max_length=100, blank=True, null=True)
-    account_name = models.CharField(max_length=255, blank=True, null=True)
-    stock_name = models.CharField(max_length=255, blank=True, null=True)
+    recruiterDirectMessages = models.CharField(max_length=200, blank=True, default='')
+    connectMessages = models.CharField(max_length=200, blank=True, default='')
+    reason = models.CharField(max_length=500, blank=True, default='')
+    ticket_link = models.CharField(max_length=100, blank=True, default='')
+    github_link = models.CharField(max_length=100, blank=True, default='')
+    account_name = models.CharField(max_length=255, blank=True, default='')
+    stock_name = models.CharField(max_length=255, blank=True, default='')
     stock_quantity = models.PositiveIntegerField(blank=True, null=True)
     stock_value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    transaction_type = models.CharField(max_length=4, choices=TRANSACTION_TYPE_CHOICES, blank=True, null=True)
+    transaction_type = models.CharField(max_length=4, choices=TRANSACTION_TYPE_CHOICES, blank=True, default='')
     total_current_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
-    pickup_location = models.CharField(max_length=255, blank=True, null=True)
-    pickup_contact = models.CharField(max_length=15, blank=True, null=True)
-    dropoff_location = models.CharField(max_length=255, blank=True, null=True)
-    dropoff_contact = models.CharField(max_length=15, blank=True, null=True)
+    pickup_location = models.CharField(max_length=255, blank=True, default='')
+    pickup_contact = models.CharField(max_length=15, blank=True, default='')
+    dropoff_location = models.CharField(max_length=255, blank=True, default='')
+    dropoff_contact = models.CharField(max_length=15, blank=True, default='')
     distance_travelled = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    whatsapp_group_number = models.CharField(max_length=15, blank=True, null=True)
+    whatsapp_group_number = models.CharField(max_length=15, blank=True, default='')
     leave = models.BooleanField(default=False, null=True)
 
     class Meta:
@@ -353,7 +353,7 @@ class DeviceAllocation(models.Model):
     allocated_to = models.CharField(max_length=100, blank=False)  # Must always have a value
     from_date = models.DateField(blank=False, null=True)  # Start date of allocation
     to_date = models.DateField(blank=False, null=True)  # End date of allocation
-    purpose = models.TextField(blank=True, null=True)  # Optional field
+    purpose = models.TextField(blank=True, default='')  # Optional field
 
     class Meta:
         db_table = 'device_allocation'
@@ -366,7 +366,7 @@ from django.utils import timezone
 class HappinessIndex(models.Model):
     employee = models.ForeignKey(User, on_delete=models.CASCADE)  # Reference Employee model
     happiness_score = models.IntegerField(blank=False)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, default='')
     date = models.DateField(default=timezone.now)  # unique_for_date is deprecated, using unique_together instead
 
     class Meta:

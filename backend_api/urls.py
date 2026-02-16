@@ -16,7 +16,7 @@ from .views import (
 
 from .views import AddRoleView, GetRoleView, GetAllRolesView, UpdateRoleView, DeleteRoleView
 from .views import get_default_words
-from backend_api.views import acsParttimerStatus_detail, acsParttimerStatus_update, acsParttimerStatus_create, acsParttimerStatus_delete, application_list, application_detail_by_id_and_date
+from backend_api.views import acs_parttimer_status_detail, acs_parttimer_status_update, acs_parttimer_status_create, acs_parttimer_status_delete, application_list, application_detail_by_id_and_date
 from .views import create_college, get_college, update_college, delete_college, get_all_colleges,user_data_and_roles_view, assign_role, create_part_timer, get_status_by_id, health_check
 from .views import ConsultantCreateAPIView, ConsultantListAPIView, ConsultantDeleteAPIView, ConsultantUpdateAPIView, DeleteUserAccessRoleView, PackageListCreateView, PackageDetailView
 from .views import (
@@ -58,10 +58,10 @@ urlpatterns = [
     path('get-part-timer/<str:user_id>/', views.get_part_timer, name='get_part_timer'),
     path('packages/', PackageListCreateView.as_view(), name='package-list-create'),
     path('packages/<int:pk>/', PackageDetailView.as_view(), name='package-detail'),
-    path('acs_parttimer_status/<str:parttimer_id>', acsParttimerStatus_detail),
-    path('acs_parttimer_status_create', acsParttimerStatus_create),
-    path('acs_parttimer_status_update', acsParttimerStatus_update),
-    path('acs_parttimer_status_delete', acsParttimerStatus_delete),
+    path('acs_parttimer_status/<str:parttimer_id>', acs_parttimer_status_detail),
+    path('acs_parttimer_status_create', acs_parttimer_status_create),
+    path('acs_parttimer_status_update', acs_parttimer_status_update),
+    path('acs_parttimer_status_delete', acs_parttimer_status_delete),
     path('acs_parttimer_status_all', application_list),
     path('acs_parttimer_status/<str:id>/<str:date>', application_detail_by_id_and_date),
     path('create_status_update', create_status, name='create_status_update'),

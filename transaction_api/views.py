@@ -10,6 +10,9 @@ from django.shortcuts import get_object_or_404
 import json
 from django.utils.dateparse import parse_datetime
 
+MSG_INVALID_REQUEST_METHOD = 'Invalid request method'
+
+
 def validate_subsidiary(value):
     valid_subsidiaries = ['AMS', 'ACS', 'ASS', 'APS', 'ATI']
     return value in valid_subsidiaries
@@ -79,7 +82,7 @@ def update_transaction(request, transaction_id):
 
         return JsonResponse({'message': 'Transaction updated successfully'})
     else:
-        return JsonResponse({'message': 'Invalid request method'}, status=405)
+        return JsonResponse({'message': MSG_INVALID_REQUEST_METHOD}, status=405)
 
 @csrf_exempt
 def delete_transaction(request, transaction_id):
@@ -89,7 +92,7 @@ def delete_transaction(request, transaction_id):
         transaction.delete()
         return JsonResponse({'message': 'Transaction deleted successfully'})
     else:
-        return JsonResponse({'message': 'Invalid request method'}, status=405)
+        return JsonResponse({'message': MSG_INVALID_REQUEST_METHOD}, status=405)
 
 @csrf_exempt
 def get_transactions(request):
@@ -98,7 +101,7 @@ def get_transactions(request):
         transaction_data = list(transactions.values())
         return JsonResponse(transaction_data, safe=False)
     else:
-        return JsonResponse({'message': 'Invalid request method'}, status=405)
+        return JsonResponse({'message': MSG_INVALID_REQUEST_METHOD}, status=405)
     
 def get_transactions_by_fields(request):
     if request.method == 'GET':
@@ -132,7 +135,7 @@ def get_transactions_by_fields(request):
 
         return JsonResponse(transaction_data, safe=False)
     else:
-        return JsonResponse({'message': 'Invalid request method'}, status=405)
+        return JsonResponse({'message': MSG_INVALID_REQUEST_METHOD}, status=405)
     
 @csrf_exempt  # Use this decorator if you're testing without CSRF tokens
 def transaction_date_range_view(request):
@@ -268,4 +271,4 @@ def get_aps_transactions(request):
         
         return JsonResponse(aps_transactions, safe=False, status=200)
     else:
-        return JsonResponse({'message': 'Invalid request method'}, status=405)
+        return JsonResponse({'message': MSG_INVALID_REQUEST_METHOD}, status=405)

@@ -38,6 +38,18 @@ import docx
 
 logger = logging.getLogger(__name__)
 
+# Reusable error messages (SonarCloud: avoid duplicated string literals)
+MSG_TEAM_MEMBER_NOT_FOUND = "Team member not found"
+MSG_OBJECT_TODO_NOT_EXISTS = "Object with todo id does not exists"
+MSG_ROLE_NOT_FOUND = "Role not found"
+MSG_COLLEGE_NOT_FOUND = "College not found."
+MSG_USER_NOT_FOUND = "User not found."
+MSG_SOMETHING_WENT_WRONG = "Something went wrong! Try again."
+MSG_AN_ERROR_OCCURRED = "An error occurred"
+MSG_PRODUCT_NOT_FOUND = "Product not found"
+MSG_DEVICE_ALLOCATION_NOT_FOUND = "Device allocation not found"
+MSG_SUBSIDIARY_NOT_FOUND = "Subsidiary not found"
+
 from .models import TeamMember,HappinessIndex
 from .serializers import TeamMemberSerializer# View all team members
 @api_view(['GET'])
@@ -54,7 +66,7 @@ def get_single_team_member(request, pk):
         serializer = TeamMemberSerializer(team_member)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except TeamMember.DoesNotExist:
-        return Response({"error": "Team member not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_TEAM_MEMBER_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
 # Add a new team member
 @api_view(['POST'])
@@ -73,7 +85,7 @@ def delete_team_member(request, pk):
         team_member.delete()
         return Response({"message": "Team member deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     except TeamMember.DoesNotExist:
-        return Response({"error": "Team member not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_TEAM_MEMBER_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
 # Update a team member by ID
 @api_view(['PUT'])
@@ -86,7 +98,7 @@ def update_team_member(request, pk):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except TeamMember.DoesNotExist:
-        return Response({"error": "Team member not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_TEAM_MEMBER_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
@@ -141,68 +153,53 @@ class TodoListApiView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class TodoDetailApiView(APIView):
-    # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
-def get_object(self, todo_id, user_id):
-        '''
-        Helper method to get the object with given todo_id, and user_id
-        '''
+
+    def get_object(self, todo_id, user_id):
         try:
-            return Todo.objects.get(id=todo_id, user = user_id)
+            return Todo.objects.get(id=todo_id, user=user_id)
         except Todo.DoesNotExist:
             return None
 
-    # 3. Retrieve
-        def get(self, request, todo_id, *args, **kwargs):
-
-            todo_instance = self.get_object(todo_id, request.user.id)
-            if not todo_instance:
-                return Response(
-                {"res": "Object with todo id does not exists"},
+    def get(self, request, todo_id, *args, **kwargs):
+        todo_instance = self.get_object(todo_id, request.user.id)
+        if not todo_instance:
+            return Response(
+                {"res": MSG_OBJECT_TODO_NOT_EXISTS},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
         serializer = TodoSerializer(todo_instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # 4. Update
-        def put(self, request, todo_id, *args, **kwargs):
-            '''
-            Updates the todo item with given todo_id if exists
-            '''
-            todo_instance = self.get_object(todo_id, request.user.id)
+    def put(self, request, todo_id, *args, **kwargs):
+        todo_instance = self.get_object(todo_id, request.user.id)
         if not todo_instance:
             return Response(
-                {"res": "Object with todo id does not exists"}, 
+                {"res": MSG_OBJECT_TODO_NOT_EXISTS},
                 status=status.HTTP_400_BAD_REQUEST
             )
         data = {
-            'task': request.data.get('task'), 
-            'completed': request.data.get('completed'), 
+            'task': request.data.get('task'),
+            'completed': request.data.get('completed'),
             'user': request.user.id
         }
-        serializer = TodoSerializer(instance = todo_instance, data=data, partial = True)
+        serializer = TodoSerializer(instance=todo_instance, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # 5. Delete
-        def delete(self, request, todo_id, *args, **kwargs):
-            '''
-            Deletes the todo item with given todo_id if exists
-            '''
+    def delete(self, request, todo_id, *args, **kwargs):
         todo_instance = self.get_object(todo_id, request.user.id)
         if not todo_instance:
             return Response(
-                {"res": "Object with todo id does not exists"}, 
+                {"res": MSG_OBJECT_TODO_NOT_EXISTS},
                 status=status.HTTP_400_BAD_REQUEST
             )
         todo_instance.delete()
-        return Response(
-            {"res": "Object deleted!"},
-            status=status.HTTP_200_OK
-        )
+        return Response({"res": "Object deleted!"}, status=status.HTTP_200_OK)
+
+
 class AddRoleView(APIView):
     def post(self, request):
         data = json.loads(request.body)
@@ -215,7 +212,7 @@ class GetRoleView(APIView):
             role = AccessRoles.objects.get(id=role_id)
             return JsonResponse({'admin_access_role': role.admin_access_role, 'name_of_role': role.name_of_role})
         except ObjectDoesNotExist:
-            return JsonResponse({'error': 'Role not found'}, status=404)
+            return JsonResponse({'error': MSG_ROLE_NOT_FOUND}, status=404)
 
 class GetAllRolesView(APIView):
     def get(self, request):
@@ -233,7 +230,7 @@ class UpdateRoleView(APIView):
             role.save()
             return JsonResponse({'message': 'Role updated successfully'})
         except ObjectDoesNotExist:
-            return JsonResponse({'error': 'Role not found'}, status=404)
+            return JsonResponse({'error': MSG_ROLE_NOT_FOUND}, status=404)
 
 class DeleteRoleView(APIView):
     def delete(self, request, role_id):
@@ -242,7 +239,7 @@ class DeleteRoleView(APIView):
             role.delete()
             return JsonResponse({'message': 'Role deleted successfully'})
         except ObjectDoesNotExist:
-            return JsonResponse({'error': 'Role not found'}, status=404)
+            return JsonResponse({'error': MSG_ROLE_NOT_FOUND}, status=404)
 
 class ConsultantCreateAPIView(APIView):
     def post(self, request, format=None):
@@ -276,7 +273,7 @@ def get_college(request, pk):
     try:
         college = CollegesList.objects.get(pk=pk)
     except CollegesList.DoesNotExist:
-        return Response({"error": "College not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_COLLEGE_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = CollegesListSerializer(college)
@@ -287,7 +284,7 @@ def update_college(request, pk):
     try:
         college = CollegesList.objects.get(pk=pk)
     except CollegesList.DoesNotExist:
-        return Response({"error": "College not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_COLLEGE_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
         serializer = CollegesListSerializer(college, data=request.data)
@@ -301,7 +298,7 @@ def delete_college(request, pk):
     try:
         college = CollegesList.objects.get(pk=pk)
     except CollegesList.DoesNotExist:
-        return Response({"error": "College not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_COLLEGE_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'DELETE':
         college.delete()
@@ -411,10 +408,6 @@ def user_data_and_roles_view(request):
         'body': request.body.decode('utf-8', errors='replace') if request.body else ''
     }
 
-    # Serialize the dictionary to a JSON-formatted string
-    request_json = json.dumps(request_data, indent=4)
-
-    # Print the JSON string
     # Fetching all users
     users = User.objects.all()
     users_serializer = UserSerializer(users, many=True)
@@ -495,10 +488,10 @@ def create_part_timer(request):
                 print("Errors:", part_timer_serializer.errors)
                 return Response(part_timer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": MSG_USER_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         print("An error occurred:", e)
-        return Response({"detail": "An error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"detail": MSG_AN_ERROR_OCCURRED}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 def get_part_timer(request, user_id):
@@ -514,7 +507,7 @@ def get_part_timer(request, user_id):
             return Response({"detail": "Part-timer not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         print("An error occurred:", e)
-        return Response({"detail": "An error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"detail": MSG_AN_ERROR_OCCURRED}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class PackageListCreateView(generics.ListCreateAPIView):
@@ -544,7 +537,7 @@ class PackageDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 @api_view(['GET'])
 @csrf_exempt
-def acsParttimerStatus_detail(request, parttimer_id):
+def acs_parttimer_status_detail(request, parttimer_id):
     try:
         applications = AcsParttimerStatus.objects.filter(parttimerId=parttimer_id)
     except ObjectDoesNotExist:
@@ -570,7 +563,7 @@ def acsParttimerStatus_detail(request, parttimer_id):
 
 @api_view(['POST'])
 @csrf_exempt
-def acsParttimerStatus_create(request):
+def acs_parttimer_status_create(request):
     try:
         if request.method == "POST":
             data = request.data  # Use request.data for JSON data
@@ -593,7 +586,7 @@ def acsParttimerStatus_create(request):
                     return JsonResponse({"message": "Already submitted..!"}, status=400)
                 
                 # Create a new AcsParttimerStatus object
-                application = AcsParttimerStatus.objects.create(
+                AcsParttimerStatus.objects.create(
                     parttimerName=data["parttimerName"],
                     parttimerId=data["parttimerId"],
                     studentName=data["studentName"],
@@ -615,15 +608,15 @@ def acsParttimerStatus_create(request):
                 return JsonResponse({"message": f"{field} required field is missing"}, status=400)
             
             except Exception as e:
-                return JsonResponse({"message": "Something went wrong! Try again."}, status=500)
+                return JsonResponse({"message": MSG_SOMETHING_WENT_WRONG}, status=500)
         
     except Exception as e:
-        return JsonResponse({"message": "Something went wrong! Try again."}, status=500)
+        return JsonResponse({"message": MSG_SOMETHING_WENT_WRONG}, status=500)
 
 
 @api_view(['PUT'])
 @csrf_exempt
-def acsParttimerStatus_update(request):
+def acs_parttimer_status_update(request):
     try:
         if request.method == "PUT":
             data = request.data  # Use request.data for JSON data
@@ -658,14 +651,14 @@ def acsParttimerStatus_update(request):
                 return JsonResponse({"message": f"{field} required field is missing"}, status=400)
             
             except Exception as e:
-                return JsonResponse({"message": "An error occurred"}, status=500)
+                return JsonResponse({"message": MSG_AN_ERROR_OCCURRED}, status=500)
         
     except Exception as e:
-        return JsonResponse({"message": "An error occurred"}, status=500)
+        return JsonResponse({"message": MSG_AN_ERROR_OCCURRED}, status=500)
 
 @api_view(['DELETE'])
 @csrf_exempt
-def acsParttimerStatus_delete(request):
+def acs_parttimer_status_delete(request):
     try:
         data = request.data  # Use request.data for JSON data
         
@@ -686,7 +679,7 @@ def acsParttimerStatus_delete(request):
         field = e.args[0]
         return JsonResponse({"error": f"{field} required field is missing"}, status=400)
     except Exception as e:
-        return JsonResponse({"error": "An error occurred"}, status=500)
+        return JsonResponse({"error": MSG_AN_ERROR_OCCURRED}, status=500)
 
 @api_view(['GET'])
 @csrf_exempt
@@ -847,10 +840,10 @@ def create_status(request):
                 return JsonResponse({"message": f"{field} required field is missing"}, status=400)
             
             except Exception as e:
-                return JsonResponse({"message": "Something went wrong! Try again."}, status=500)
+                return JsonResponse({"message": MSG_SOMETHING_WENT_WRONG}, status=500)
     
     except Exception as e:
-        return JsonResponse({"message": "Something went wrong!"}, status=500)
+        return JsonResponse({"message": MSG_SOMETHING_WENT_WRONG}, status=500)
     
 @api_view(['POST'])
 @csrf_exempt
@@ -915,7 +908,7 @@ def update_status_by_id(request):
     except KeyError as e:
         return JsonResponse({"message": f"{e.args[0]} required field is missing"}, status=400)
     except Exception as e:
-        return JsonResponse({"message": "An error occurred"}, status=500)
+        return JsonResponse({"message": MSG_AN_ERROR_OCCURRED}, status=500)
 
 @api_view(['DELETE'])
 @csrf_exempt
@@ -935,7 +928,7 @@ def delete_status_by_id(request):
     except KeyError as e:
         return JsonResponse({"error": f"{e.args[0]} required field is missing"}, status=400)
     except Exception as e:
-        return JsonResponse({"error": "An error occurred"}, status=500)
+        return JsonResponse({"error": MSG_AN_ERROR_OCCURRED}, status=500)
 
 @api_view(['GET'])
 def get_college_details(request):
@@ -1033,7 +1026,7 @@ def get_single_product(request, pk):
         serializer = ShopingProductSerializer(product)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except ShopingProduct.DoesNotExist:
-        return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_PRODUCT_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
     
 # Add a new product
 @api_view(['POST'])
@@ -1051,7 +1044,7 @@ def delete_product(request, pk):
         product.delete()
         return Response({"message": "Product deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     except ShopingProduct.DoesNotExist:
-        return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_PRODUCT_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['PUT'])
 def update_product(request, pk):
@@ -1063,7 +1056,7 @@ def update_product(request, pk):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except ShopingProduct.DoesNotExist:
-        return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_PRODUCT_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
 # Employer Views
 class EmployerListCreateAPIView(APIView):
@@ -1192,7 +1185,7 @@ def get_single_device(request, pk):
         serializer = DeviceAllocationSerializer(device)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except DeviceAllocation.DoesNotExist:
-        return Response({"error": "Device allocation not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_DEVICE_ALLOCATION_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
 # Add a new device allocation
 @api_view(['POST'])
@@ -1214,7 +1207,7 @@ def update_device(request, pk):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except DeviceAllocation.DoesNotExist:
-        return Response({"error": "Device allocation not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_DEVICE_ALLOCATION_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
 # Delete a device allocation
 @api_view(['DELETE'])
@@ -1224,7 +1217,7 @@ def delete_device(request, pk):
         device.delete()
         return Response({"message": "Device allocation deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     except DeviceAllocation.DoesNotExist:
-        return Response({"error": "Device allocation not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_DEVICE_ALLOCATION_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 @csrf_exempt
@@ -1291,7 +1284,7 @@ def submit_happiness_index(request, user_id):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     except User.DoesNotExist:
-        return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": MSG_USER_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
     except Exception as e:
         return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -1314,7 +1307,7 @@ def get_happiness_index(request,user_id):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     except User.DoesNotExist:
-        return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": MSG_USER_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
     
     except Exception as e:
         return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -1334,7 +1327,7 @@ def get_all_happiness_indexes(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     except User.DoesNotExist:
-        return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": MSG_USER_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
     except Exception as e:
         return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -1410,7 +1403,7 @@ def get_single_subsidiary(request, pk):
         serializer = SubsidiarySerializer(subsidiary)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Subsidiary.DoesNotExist:
-        return Response({"error": "Subsidiary not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_SUBSIDIARY_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
 def add_subsidiary(request):
@@ -1430,7 +1423,7 @@ def update_subsidiary(request, pk):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Subsidiary.DoesNotExist:
-        return Response({"error": "Subsidiary not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_SUBSIDIARY_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['DELETE'])
 def delete_subsidiary(request, pk):
@@ -1439,4 +1432,4 @@ def delete_subsidiary(request, pk):
         subsidiary.delete()
         return Response({"message": "Subsidiary deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     except Subsidiary.DoesNotExist:
-        return Response({"error": "Subsidiary not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": MSG_SUBSIDIARY_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)

@@ -109,7 +109,7 @@ class Command(BaseCommand):
         last_names = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez']
         
         users = []
-        for i in range(25):
+        for _ in range(25):
             first = random.choice(first_names)
             last = random.choice(last_names)
             user_id = f'user_{i+1:03d}'
@@ -180,7 +180,7 @@ class Command(BaseCommand):
                            ['C#', '.NET'], ['Go', 'Docker'], ['Ruby', 'Rails'], ['PHP', 'Laravel']]
 
         consultants = []
-        for i in range(20):
+        for _ in range(20):
             first = random.choice(first_names)
             last = random.choice(last_names)
             consultant = Consultant(
@@ -233,7 +233,7 @@ class Command(BaseCommand):
             return
 
         statuses = []
-        for i in range(15):
+        for _ in range(15):
             days_ago = random.randint(0, 90)
             status_date = timezone.now().date() - timedelta(days=days_ago)
             statuses.append(StatusConsultant(
@@ -256,7 +256,7 @@ class Command(BaseCommand):
             return
 
         roles = []
-        for i in range(20):
+        for _ in range(20):
             user = random.choice(users)
             access_role = random.choice(access_roles)
             roles.append(Role(
@@ -331,7 +331,7 @@ class Command(BaseCommand):
 
         details = []
         for college in colleges:
-            for i in range(3):
+            for _ in range(3):
                 details.append(CollegeDetail(
                     college=college,
                     college_name=college.college_name,
@@ -348,7 +348,7 @@ class Command(BaseCommand):
         last_names = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones']
         
         persons = []
-        for i in range(15):
+        for _ in range(15):
             persons.append(Person(
                 name=f'{random.choice(first_names)} {random.choice(last_names)}',
                 email=f'person{i+1}@example.com',
@@ -371,7 +371,7 @@ class Command(BaseCommand):
         years = ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Graduate', None]
 
         part_timers = []
-        for i in range(15):
+        for _ in range(15):
             user = random.choice(users)
             part_timers.append(PartTimer(
                 user=user.user_id,
@@ -402,7 +402,7 @@ class Command(BaseCommand):
         tasks = ['Complete project', 'Review code', 'Write documentation', 'Fix bugs', 'Update dependencies',
                 'Test features', 'Deploy application', 'Code review', 'Meeting preparation', 'Email follow-up']
         
-        for i in range(15):
+        for _ in range(15):
             todos.append(Todo(
                 task=f'{random.choice(tasks)} {i+1}',
                 completed=random.choice([True, False]),
@@ -419,7 +419,7 @@ class Command(BaseCommand):
             return
 
         statuses = []
-        for i in range(20):
+        for _ in range(20):
             user = random.choice(users)
             statuses.append(AcsParttimerStatus(
                 parttimerName=user.full_name or f'PartTimer {i+1}',
@@ -449,7 +449,7 @@ class Command(BaseCommand):
         sources = ['Web', 'Mobile', 'API', None]
         
         statuses = []
-        for i in range(25):
+        for _ in range(25):
             user = random.choice(users)
             status_date = timezone.now().date() - timedelta(days=random.randint(0, 60))
             
@@ -498,7 +498,7 @@ class Command(BaseCommand):
         names = ['John Doe', 'Jane Smith', 'Bob Johnson', 'Alice Williams', 'Charlie Brown']
         
         transactions = []
-        for i in range(20):
+        for _ in range(20):
             transaction_date = timezone.now() - timedelta(days=random.randint(0, 90))
             transactions.append(Transaction(
                 receiver_name=random.choice(names),
@@ -558,7 +558,7 @@ class Command(BaseCommand):
         purposes = ['Development', 'Testing', 'General Use', 'Design Work', 'Video Editing', None]
         
         allocations = []
-        for i in range(15):
+        for _ in range(15):
             start_date = timezone.now().date() - timedelta(days=random.randint(0, 180))
             end_date = start_date + timedelta(days=random.randint(90, 365)) if i % 3 != 0 else (timezone.now().date() + timedelta(days=365))
             user = random.choice(users) if users else None
@@ -583,7 +583,7 @@ class Command(BaseCommand):
             return
 
         indexes = []
-        for i in range(20):
+        for _ in range(20):
             user = random.choice(users)
             index_date = timezone.now().date() - timedelta(days=random.randint(0, 30))
             

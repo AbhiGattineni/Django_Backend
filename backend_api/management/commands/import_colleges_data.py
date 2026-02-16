@@ -6,6 +6,7 @@ from math import isnan
 from decimal import Decimal, InvalidOperation
 from django.utils.dateparse import parse_date
 
+COLUMN_APPLICATION_FEE_GRADUATE = 'Application Fee Graduate'
 
 
 class Command(BaseCommand):
@@ -65,8 +66,8 @@ class Command(BaseCommand):
                             application_graduation_link=row['Application Link Graduate'],  
                             application_UG_fee= row['Application Fee UG'],  
                             application_UG_fee_link=self.get_hyperlink(sheet, row_num, 'Application Fee UG',df),
-                            application_graduation_fee=row['Application Fee Graduate'] if not pd.isna(row['Application Fee Graduate']) else None,
-                            application_graduation_fee_link=self.get_hyperlink(sheet, row_num, 'Application Fee Graduate',df),  
+                            application_graduation_fee=row[COLUMN_APPLICATION_FEE_GRADUATE] if not pd.isna(row[COLUMN_APPLICATION_FEE_GRADUATE]) else None,
+                            application_graduation_fee_link=self.get_hyperlink(sheet, row_num, COLUMN_APPLICATION_FEE_GRADUATE, df),  
                             gre_score= row['GRE SCORE'],   
                             gre_score_link=self.get_hyperlink(sheet, row_num, 'GRE SCORE',df),  
                             toefl_UG_score= row['TOEFL SCORE UG'], 
