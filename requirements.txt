@@ -13,6 +13,9 @@ PyMySQL>=1.1.1
 # IDs
 shortuuid>=1.0.13
 
+# Images (Django ImageField: ShopingProduct, TeamMember)
+Pillow>=12.1.1
+
 # PDF/DOCX (backend_api/views.py)
 PyMuPDF>=1.26.0
 python-docx>=1.1.2
