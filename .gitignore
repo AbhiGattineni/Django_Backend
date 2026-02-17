@@ -63,3 +63,9 @@ Thumbs.db
 
 # Node modules for frontend
 node_modules/
+
+# terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/.terraform.tfstate.lock.info
